@@ -202,6 +202,9 @@ jobs:
           cmd /c "taskkill /F /T /PID $($proc.Id) >NUL 2>NUL"
           cmd /c "taskkill /F /IM NovelSims_debug.exe >NUL 2>NUL"
           cmd /c "taskkill /F /IM NovelSims.exe >NUL 2>NUL"
+          # taskkill returns 128 when an image is already gone. Do not let that
+          # become this step's exit code after a successful launch.
+          $global:LASTEXITCODE = 0
           Start-Sleep -Seconds 1
 
           $errLog = Join-Path $env:LOCALAPPDATA "NovelSims\startup_error.log"
@@ -216,6 +219,7 @@ jobs:
           }
           if ($failed) { exit 1 }
           Write-Host "SMOKE PASS: NovelSims_debug.exe still running after 15s and no startup_error.log"
+          exit 0
 
       - name: Upload onefile
         uses: actions/upload-artifact@v7
