@@ -6,6 +6,7 @@
 <meta name="ns-admin" content="__ADMIN_TOKEN__">
 <title>NovelSims 后端</title>
 <style>
+
 :root{
   --bg:#f3f5f7; --paper:#ffffff; --ink:#1b2430; --muted:#5d6b7c; --line:#e4e9ef;
   --accent:#1f6f8b; --accent-2:#e7f4f7; --soft:#f7f8fa; --shadow:0 12px 32px rgba(27,36,48,.08);
@@ -166,13 +167,57 @@ textarea{min-height:90px;resize:vertical}
   .book-spine,.book-open,.btn{transition:none;animation:none}
 }
 
+
+/* 0.3.9 Aurelis: warm paper, burgundy, serif numbers */
+:root{--bg:#ECEBE1;--paper:#E6E2D6;--ink:#2C211C;--muted:#7A6E66;--line:#D4CFC2;--accent:#5A1A1A;--accent-2:#F4E7E4;--wine:#5A1A1A;--serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun","Playfair Display","Times New Roman",serif}
+html,body,.sheet{background:#ECEBE1!important;color:#2C211C!important}
+h1,h2,h3,.ph h1,.sb b,.ht h1,.library-hero h2,.library-section-title h3,.nm,.stat b,.feat h2,.book-detail h2{font-family:var(--serif)!important;font-weight:560;letter-spacing:-.02em;color:#2C211C}
+.nav{display:grid!important;grid-template-columns:minmax(140px,auto) 1fr auto;align-items:center;background:transparent!important;border:0!important;padding:14px 18px 6px}
+.brand{font-family:var(--serif);color:#5A1A1A}
+.ver{background:#F4E7E4;color:#5A1A1A}
+.links{justify-self:center;display:flex;background:#E0DCD0;border-radius:999px;padding:4px;gap:2px}
+.links button{color:#6d625a;padding:8px 14px;font-size:13px;font-weight:600}
+.links button.on{background:#5A1A1A!important;color:#F7F3EA!important}
+.card,.sb,.finder,.tcard,.tside,.dark2,.library-hero,.idc,.rel-stage,.rel-side,.book-detail,.modal>div,.tile{background:#E6E2D6!important;border-color:#D4CFC2!important;color:#2C211C;box-shadow:0 10px 24px rgba(70,50,30,.05)!important}
+.btn{background:#EFEBE3;border-color:#D4CFC2;border-radius:999px}
+.btn.p,.cta,.bigbtn{background:#5A1A1A!important;color:#F7F3EA!important;border-color:transparent!important;border-radius:999px}
+.note,.sub,.fs,.who,.hs,.ds{color:#7A6E66}
+.shelf{background:#EFEBE1!important;box-shadow:inset 0 -12px 0 #D2C8B6, 0 12px 18px rgba(70,48,28,.06)!important}
+.book-spine{color:#F7F3EA}
+.book-cover{background:linear-gradient(165deg,#3A1212,#5A1A1A 58%,#C4B49A)!important}
+.idc .band,.idl .band{background:linear-gradient(120deg,#E7E0D2,#D9CBBA)!important}
+.trait,.chip,.tg.in,.pill{background:#F4E7E4;color:#5A1A1A}
+.search,.seg2,.ib,.win-controls button{background:#EFEBE3;border-color:#D4CFC2}
+.dash-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:6px 0 14px}
+.dash-head h1{margin:0;font-size:40px}
+.dash-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{position:relative;background:#E6E2D6;border:1px solid #D4CFC2;border-radius:22px;padding:16px 16px 14px;min-height:148px}
+.stat b{font-size:44px;line-height:1;display:block;margin:8px 0 4px}
+.delta{font-size:12px;color:#5A1A1A}
+.more{position:absolute;top:10px;right:12px;border:0;background:transparent;color:#8A7E74;letter-spacing:.2em;font-size:16px}
+.dots{display:grid;grid-template-columns:repeat(10,7px);gap:4px;margin-top:12px}
+.dots i{width:6px;height:6px;border-radius:99px;background:#D4CFC2;display:block}
+.dots i.on{background:#5A1A1A}
+.feat{position:relative;min-height:280px}
+.feat-body{display:flex;gap:14px;align-items:center;margin:12px 0}
+.portrait{width:96px;height:112px;border-radius:18px;background:radial-gradient(circle at 50% 30%,#8d5a4a,#3a1212 70%);color:#F7F3EA;display:grid;place-items:center;font-family:var(--serif);font-size:40px;flex:none}
+.kicker{font-size:11px;letter-spacing:.16em;color:#7A6E66}
+.span2{grid-column:1 / -1;display:grid;grid-template-columns:1.1fr .9fr .9fr;gap:12px}
+.act{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:8px;padding:8px 0;border-bottom:1px solid #D4CFC2;font-size:13px}
+.act em{font-style:normal;color:#5A1A1A;font-size:12px}
+.conn{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #D4CFC2;font-size:13px}
+.conn i{width:8px;height:8px;border-radius:99px;background:#5A1A1A;display:inline-block;margin-right:6px}
+.gauge-wrap{display:flex;align-items:flex-end;gap:8px}
+.library-hero{background:linear-gradient(160deg,#EFEBE1,#E4D9CC)!important}
+@media(max-width:980px){.dash-grid,.span2,.stats{grid-template-columns:1fr}.span2{grid-column:auto}}
 </style>
 </head>
 <body>
 <canvas id="ns-particles" aria-hidden="true"></canvas>
 <div class="sheet" id="sheet">
   <header class="nav">
-    <div class="brand"><span id="plb"></span><span class="word">novelsims</span><em class="ver">v0.3.8</em></div>
+    <div class="brand"><span id="plb"></span><span class="word">novelsims</span><em class="ver">v0.3.9</em></div>
     <nav class="links" id="nav"></nav>
     <div class="topr"><label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="text" placeholder="搜索小说或角色" autocomplete="off"></label><span id="status"></span><button class="ib" id="bell" title="失败的请求"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><em id="belln" style="display:none"></em></button><button class="btn p" id="newn" style="height:38px">＋ 新建小说</button><div class="win-controls"><button id="win-min" title="最小化">－</button><button id="win-close" title="关闭">×</button></div></div>
   </header>
@@ -308,27 +353,23 @@ const POOL=`<svg viewBox="0 0 640 460" preserveAspectRatio="xMidYMid slice" aria
 <g fill="#f5e6c8"><rect x="60" y="270" width="150" height="40" rx="20"/><rect x="250" y="286" width="120" height="30" rx="15"/></g><g fill="#fff3d8"><circle cx="190" cy="262" r="5"/><circle cx="520" cy="292" r="5"/></g></svg>`;
 /* ---------- 概览 ---------- */
 const OKST=['confirmed','user_defined','fixture'];
-function pOverview(){const o=OV;return api('characters').then(c=>{const cs=c.characters,tot=cs.length,conf=cs.filter(x=>OKST.includes(x.status)).length,low=cs.filter(x=>x.status==='low_data').length,draft=tot-conf-low;
- const pool=cs.filter(x=>V.ft==='ok'?OKST.includes(x.status):V.ft==='draft'?!OKST.includes(x.status):true),feat=pool[0]||cs[0];
- const okp=o.total?Math.round(100*o.success/o.total):null,ms=o.avg_latency_ms,last=o.recent.find(r=>r.outcome==='success'&&r.text);
- const f=(k,v)=>`<div><label>${k}</label><div class="v">${esc(v)}</div></div>`;
- const stages=['original_early','original_mid','original_late'];
- $('#page').innerHTML=`<div class="wrapx"><div class="hero2"><div class="ht"><h1>让小说里的人，<br>住进你的小镇</h1><div class="hs">检索公开资料，整理成身份卡，绑定到《模拟人生4》的小人，让TA们继续生活。</div><button class="cta" id="h-go">开始检索 ↗</button></div>
- <div class="finder"><div class="fh"><div><h2>今日小人</h2><div class="fs">选一位小人，查看TA的身份卡</div></div><div class="seg2" id="sg">${[['all','全部'],['ok','已确认'],['draft','待校对']].map(x=>`<button data-k="${x[0]}" class="${V.ft===x[0]?'on':''}">${x[1]}</button>`).join('')}</div></div>
- <div class="fields">${f('小说',feat?feat.novel||'—':'—')}${f('角色',feat?nm(feat.name):'—')}${f('状态',feat?(({confirmed:'已确认',user_defined:'自设角色',fixture:'测试角色',draft:'草稿·待校对',low_data:'资料不足'})[feat.status]||feat.status):'—')}${f('特质',feat&&feat.tags.length?feat.tags.slice(0,2).join(' · '):'—')}${f('记忆',feat?`固定 ${feat.canon} · 经历 ${feat.dynamic}`:'—')}</div>
- <button class="bigbtn" id="h-open">${feat?'打开身份卡':'去创建第一位小人'}</button></div></div>
- <div class="statement"><h2>不只是聊天，<br>是一座有故事的小镇</h2><p>原著设定保持锁定，游戏里的新经历单独记录，人物可以成长，但不会随意崩坏。</p></div>
- <div class="statband"><div class="sb"><b>${o.total}</b><span>次对话请求</span></div><div class="sb"><b>${okp==null?'—':okp+'<small style="font-size:24px">%</small>'}</b><span>请求成功率</span></div><div class="sb"><b>${conf}</b><span>张身份卡可绑定${draft+low?`（另有 ${draft+low} 张待处理）`:''}</span></div><div class="sb"><b>${ms==null?'—':ms<1000?ms+'<small style="font-size:22px"> ms</small>':(ms/1000).toFixed(1)+'<small style="font-size:22px"> s</small>'}</b><span>平均响应</span></div></div>
- <div class="testi"><div class="tcard"><div class="port" style="background:${last?hue(last.actor_name):'#b8892f'}">${esc(nm(last?last.actor_name:'？').charAt(0))}</div><div><p class="quote">${last?'“'+esc(nm(last.text))+'”':'还没有对话。回到游戏，点另一个小人 →“NovelSims：AI台词”。'}</p><div class="who">${last?esc(nm(last.actor_name))+' → '+esc(nm(last.target_name))+' · '+esc(last.latency_ms)+' ms':'小人开口之后，最近的一句会显示在这里'}</div></div></div>
- <div class="tside"><div class="row2"><span>当前模型</span><b>${esc(o.provider.name)}</b></div><div class="row2"><span>最近一次请求</span><b>${ago(o.last_request_age_s)}</b></div><div class="row2"><span>失败 / 被拒绝</span><b>${o.errors} / ${o.rejected}</b></div><div class="bar" style="margin-top:6px"><button class="btn p" id="t-logs">查看全部日志</button><button class="btn" id="t-link">连接状态</button></div></div></div>
- <div class="dark2"><h2>为TA找到合适的角色</h2><div class="ds">只需填写书名即可。系统会自动检索公开资料、识别人物并生成可溯源身份卡。</div>
- <div class="plan"><div class="pic">${POOL}</div><div class="planc"><h3>新建小说</h3><div class="ps">人物名单可留空，系统将尝试自动识别；也可手动指定关键角色</div>
- <label>书名</label><input type="text" id="p-t" placeholder="例如：雾港旧事"><label>作者（可选，用于区分同名的书）</label><input type="text" id="p-a"><label>人物名单（可选）</label><input type="text" id="p-c" placeholder="留空即可自动识别人物"><label>获取方式</label><select id="p-m"><option value="web">免费检索公开资料（不调用付费搜索 API）</option><option value="manual">我自己写剧情</option><option value="both">两者结合</option></select><div id="p-pw" style="display:none"><label>自设剧情 / 人物设定（至少 30 字）</label><textarea id="p-p" style="min-height:90px"></textarea></div>
- <button class="bigbtn" id="p-go" style="margin-top:14px;background:var(--esp2);color:var(--cream)">创建并开始</button></div></div></div></div>`;
- $('#h-go').onclick=()=>{go('novels');newNovel()};$('#h-open').onclick=()=>{if(feat){V.cid=feat.character_id;V.edit=false;go('cards')}else{go('cards');newCard()}};
- $$('#sg button').forEach(b=>b.onclick=()=>{V.ft=b.dataset.k;load()});$('#t-logs').onclick=()=>go('logs');$('#t-link').onclick=()=>go('link');
- $('#p-m').onchange=e=>{$('#p-pw').style.display=e.target.value==='web'?'none':'block'};
- $('#p-go').onclick=()=>{const v=i=>$('#'+i).value;api('novels',{method:'POST',body:{title:v('p-t'),author:v('p-a'),characters:v('p-c'),mode:v('p-m'),plot_text:v('p-p')}}).then(n=>api('novels/start',{method:'POST',body:{novel_id:n.novel_id}}).then(()=>{V.nid=n.novel_id;V.tab='cards';toast('已开始');go('novels')})).catch(e=>toast(e.message))}})}
+function pOverview(){const o=OV;return Promise.all([api('characters'),api('catalog?category='+encodeURIComponent('全部')+'&rank='+encodeURIComponent('全部')+'&q=')]).then(([c,cat])=>{
+ const cs=c.characters||[], tot=cs.length, conf=cs.filter(x=>OKST.includes(x.status)).length, low=cs.filter(x=>x.status==='low_data').length, draft=Math.max(0,tot-conf);
+ const books=(cat&&(cat.count||(cat.books||[]).length))||0;
+ const feat=cs.find(x=>OKST.includes(x.status))||cs[0];
+ const rate=tot?Math.round(100*conf/tot):0;
+ const arc=Math.round(rate/100*157);
+ const mx=p=>'<span class="dots">'+Array.from({length:40},(_,i)=>'<i class="'+(i<Math.round(Math.max(0,Math.min(1,p))*40)?'on':'')+'"></i>').join('')+'</span>';
+ const recent=(o.recent||[]).slice(0,5).map(r=>'<div class="act"><b>'+esc(nm(r.actor_name)||'系统')+'</b><span>'+esc(nm(r.text)||r.outcome||'')+'</span><em>'+esc(r.outcome||'')+'</em></div>').join('')||'<div class="note">还没有对话。回到游戏里点一个小人即可。</div>';
+ const tr=o.transports||{}, on=k=>tr[k]&&tr[k].on;
+ const stat=(k,n,d,p)=>'<article class="stat"><button class="more" tabindex="-1">···</button><div class="kicker">'+k+'</div><b>'+n+'</b><div class="delta">'+d+'</div>'+mx(p)+'</article>';
+ $('#page').innerHTML='<div class="wrapx dash"><div class="dash-head"><div><div class="kicker">NOVELSIMS</div><h1>概览</h1><p class="note">让小说里的人，住进你的小镇</p></div><button class="btn p" id="h-go">开始检索</button></div><div class="dash-grid"><article class="card feat"><button class="more" tabindex="-1">···</button><div class="kicker">今日人物</div><div class="feat-body"><div class="portrait">'+(feat?esc(nm(feat.name).charAt(0)||'书'):'书')+'</div><div><h2>'+(feat?esc(nm(feat.name)):'还没有身份卡')+'</h2><div class="note">'+(feat?esc(feat.identity||feat.novel||'待补充身份'):'从书架选一本书，检索后再生成身份卡')+'</div><div class="tags">'+(feat?(feat.tags||[]).slice(0,3).map(t=>'<span class="trait">'+esc(t)+'</span>').join(''):'')+'</div><div class="note">'+(feat?esc(feat.novel||''):'')+'</div></div></div><button class="bigbtn" id="h-open">'+(feat?'打开身份卡':'去书架')+'</button></article><div class="stats">'+stat('书库数量',books,'当前在架目录',books?Math.min(1,books/40):0)+stat('身份卡数量',tot,conf+' 张已可绑定',tot?conf/Math.max(tot,1):0)+stat('已确认',conf,tot?rate+'% 已确认':'还没有卡片',rate/100)+stat('待校对',draft+low,'需要再看一眼的卡片',tot?(draft+low)/tot:0)+'</div><div class="span2"><article class="card"><button class="more" tabindex="-1">···</button><div class="kicker">确认比例</div><div class="gauge-wrap"><svg class="gauge" viewBox="0 0 120 72" width="150" height="90"><path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="#D4CFC2" stroke-width="8" stroke-linecap="round"/><path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="#5A1A1A" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+arc+' 157"/></svg><div><b style="font-family:var(--serif);font-size:36px">'+rate+'%</b><div class="delta">已确认 / 全部身份卡</div></div></div></article><article class="card"><button class="more" tabindex="-1">···</button><div class="kicker">最近动态</div>'+recent+'<div class="bar" style="margin-top:8px"><button class="btn" id="t-logs">查看日志</button></div></article><article class="card"><button class="more" tabindex="-1">···</button><div class="kicker">连接</div><div class="conn"><span><i></i>HTTP</span><b>'+(on('http')?'已开启':'关闭')+'</b></div><div class="conn"><span><i></i>TCP</span><b>'+(on('tcp')?'已开启':'关闭')+'</b></div><div class="conn"><span><i></i>文件</span><b>'+(on('file')?'已开启':'关闭')+'</b></div><div class="note">模型 '+esc((o.provider&&o.provider.name)||'')+'</div><div class="bar"><button class="btn" id="t-link">连接状态</button></div></article></div></div></div>';
+ $('#h-go').onclick=()=>{go('novels');newNovel()};
+ $('#h-open').onclick=()=>{if(feat){V.cid=feat.character_id;V.edit=false;go('cards')}else go('library')};
+ $('#t-logs').onclick=()=>go('logs');
+ $('#t-link').onclick=()=>go('link');
+}).catch(e=>{$('#page').innerHTML='<div class="card">概览暂时无法加载：'+esc(e.message)+'</div>'})}
+
 /* ---------- 模型 ---------- */
 const P=id=>S.providers.find(p=>p.id===id);
 function pModel(){return Promise.all([api('settings'),api('search_settings')]).then(([s,ss])=>{S=s;S.search=ss;if(!V.sel)V.sel=s.provider;drawModel()})}
@@ -373,7 +414,7 @@ function pLibrary(){
   const books=data.books||[];
   const cats=(data.categories||[]).map(c=>`<button data-cat="${esc(c)}" class="${V.libCategory===c?'on':''}">${esc(c)}</button>`).join('');
   const ranks=(data.ranks||[]).map(r=>`<button data-rank="${esc(r)}" class="${V.libRank===r?'on':''}">${esc(r==='全部'?'全部':r)}</button>`).join('');
-  const pal=['#1f6f8b','#3d6b4f','#8c4a3a','#3f4c7a','#6b4c7a','#8a6232','#2f6d62','#7a3e55','#3e5f8a','#355c7d'];
+  const pal=['#5A1A1A','#7A2E2E','#3E2A24','#6B3A2A','#4A3B32','#8C4A3A','#2F3A32','#6E2430','#53443A','#7A3E55'];
   const tone=s=>{let h=0;for(const ch of String(s||''))h=(h*33+ch.charCodeAt(0))>>>0;return pal[h%pal.length]};
   const shelves=[]; let bucket=[];
   books.forEach((b,i)=>{bucket.push(b); if(bucket.length>=12 || i===books.length-1){shelves.push(bucket); bucket=[]}});
