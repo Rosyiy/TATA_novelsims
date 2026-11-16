@@ -295,7 +295,7 @@ class NovelService(object):
     def _queries(self, novel):
         t, a = novel["title"], novel["author"]
         qs = [
-            '"%s" %s 人物介绍 角色介绍' % (t, a or ""),
+            '"%s" %s 原著 人物介绍 角色介绍' % (t, a or ""),
             '"%s" 主要人物 主角 配角 人物关系' % t,
             '"%s" 角色列表 人物设定 人物百科' % t,
             'site:baike.baidu.com "%s" 人物' % t,
@@ -388,6 +388,9 @@ class NovelService(object):
             self._progress(tid, 25 + 35.0 * i / max(1, len(ranked)), "读取：%s" % _short(r.title or url, 40))
             base = {"name": _short(r.title or filters.host_of(url), 80), "url": url, "kind": kind,
                     "edition": filters.detect_edition(r.title, r.snippet, url), "engine": r.engine}
+            if filters.is_screen_adaptation(r.title, r.snippet, url):
+                self.store.add_source(nid, status="skipped:影视改编，只保留原著", excerpt=r.snippet, **base)
+                continue
             why = filters.blocked_reason(url)
             if why:
                 self.store.add_source(nid, status="blocked:" + why, excerpt=r.snippet, **base)
@@ -405,6 +408,9 @@ class NovelService(object):
                         continue
                     text = raw_text[:6000]
                     base["name"] = _short(extract_title(page["html"]) or base["name"], 80)
+                    if filters.is_screen_adaptation(base["name"], r.snippet, url, text):
+                        self.store.add_source(nid, status="skipped:影视改编，只保留原著", excerpt=text[:300], **base)
+                        continue
                 except FetchError as exc:
                     if len(r.snippet) >= 30:
                         text, status = r.snippet, "used_snippet"     # engine snippet only
@@ -542,6 +548,8 @@ class NovelService(object):
         import re
         evidence = []
         for src in used:
+            if src.get("edition") == "adaptation":
+                continue
             text = src.get("text", "")
             if name not in text:
                 continue

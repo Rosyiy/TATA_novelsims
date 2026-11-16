@@ -14,8 +14,11 @@ TRUST = [("wikipedia.org", 10, "encyclopedia"), ("baike.baidu.com", 9, "encyclop
          ("qidian.com", 8, "platform"), ("jjwxc.net", 8, "platform"), ("fanqienovel.com", 7, "platform"),
          ("zongheng.com", 6, "platform"), ("douban.com", 7, "review"), ("goodreads.com", 6, "review"),
          ("zhihu.com", 4, "community"), ("tieba.baidu.com", 3, "community"), ("bilibili.com", 3, "community")]
-ADAPTATION_WORDS = ("电视剧", "电影", "改编", "漫画", "动画", "手游", "游戏", "舞台剧", "广播剧",
-                    "网剧", "剧集", "影视", "drama series", "tv series", "film")
+ADAPTATION_WORDS = ("电视剧", "电影", "改编", "漫画", "动画", "动漫", "手游", "游戏", "舞台剧", "广播剧",
+                    "网剧", "剧集", "影视", "影视化", "真人版", "剧版", "donghua", "live-action",
+                    "drama series", "tv series", "film")
+ADAPTATION_STRONG = ("电视剧", "电影", "影视", "影视化", "动画", "动漫", "网剧", "剧版", "真人版",
+                     "donghua", "live-action", "tv series")
 
 
 def host_of(url):
@@ -45,6 +48,15 @@ def trust_of(url):
 def detect_edition(title, snippet, url):
     blob = (title + " " + snippet + " " + url).lower()
     return "adaptation" if any(w in blob for w in ADAPTATION_WORDS) else "unknown"
+
+
+def is_screen_adaptation(title, snippet, url, text=""):
+    """True when a hit is about a filmed, televised, or animated adaptation, not the book."""
+    head = ((title or "") + " " + (url or "")).lower()
+    if any(w in head for w in ADAPTATION_STRONG):
+        return True
+    blob = head + " " + (snippet or "")[:400].lower() + " " + (text or "")[:500].lower()
+    return sum(blob.count(w) for w in ADAPTATION_STRONG) >= 2
 
 
 def looks_like_fulltext(text):

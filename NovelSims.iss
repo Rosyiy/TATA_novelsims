@@ -1,7 +1,7 @@
 ﻿; NovelSims 一键安装程序 (Inno Setup 6)
 #define MyAppName "NovelSims"
 #ifndef MyAppVersion
-#define MyAppVersion "0.4.0"
+#define MyAppVersion "0.5.0"
 #endif
 #define MyAppExe "NovelSims.exe"
 #define SrcDir "dist\onedir\NovelSims"

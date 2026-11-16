@@ -226,7 +226,7 @@ html,body{background:transparent!important}
 .pywebview-drag-region{ -webkit-app-region:drag }
 .win-controls,.win-controls button,.links button,.topr button,.topr input,.search{ -webkit-app-region:no-drag }
 .library-hero,.dash-head{position:relative}
-.library-hero::after,.dash-head::after{content:"";position:absolute;right:8px;top:-6px;width:120px;height:90px;opacity:.22;pointer-events:none;
+.library-hero::after,.dash-head::after{display:none!important;content:"";position:absolute;right:8px;top:-6px;width:120px;height:90px;opacity:.22;pointer-events:none;
   background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 90'><path d='M70 82c8-22 8-40 0-58 10 6 22 8 32 4-8 16-8 34 0 52-12-2-24 0-32 2z' fill='none' stroke='%235A1A1A' stroke-width='1.4'/><path d='M60 20c6 10 8 24 6 40' fill='none' stroke='%235A1A1A' stroke-width='1.2'/><circle cx='78' cy='22' r='8' fill='none' stroke='%235A1A1A'/><path d='M70 18c2-6 10-8 14-4' fill='none' stroke='%235A1A1A'/></svg>") center/contain no-repeat}
 .dossier .card h3{font-size:22px;margin:0 0 8px}
 .dossier .prose{font-size:16px;line-height:1.75;color:#2C211C}
@@ -241,15 +241,53 @@ html,body{background:transparent!important}
 .card{min-height:0}
 .empty,.card.empty{padding:16px!important}
 .book-grid{display:none}
+
+/* 0.5.0 ivory dashboard */
+:root{--bg:#E7E4DE;--paper:#F7F5F1;--ink:#1A1A1A;--muted:#6E6A64;--line:#E4E0D8;--lime:#D6F25C;--coral:#F3A8A0;--sans:"Source Han Sans SC","Noto Sans SC","PingFang SC","Microsoft YaHei",Inter,ui-sans-serif,system-ui,sans-serif}
+html,body{background:transparent!important;font-family:var(--sans)!important;color:#1A1A1A!important}
+.sheet{background:#E7E4DE!important;border-radius:28px;height:100%;min-height:0;box-shadow:0 18px 50px rgba(40,36,28,.12)}
+.sheet::before{display:none}
+h1,h2,h3,.ph h1,.library-hero h2,.nm,.stat b,.feat h2,.book-detail h2,.sb b{font-family:var(--sans)!important;font-weight:720;letter-spacing:-.04em;color:#1A1A1A!important}
+.ph h1,.dash-head h1,.library-hero h2{font-size:clamp(32px,4vw,52px);line-height:1.05}
+.nav{background:transparent!important;padding:16px 18px 8px}
+.brand{font-family:var(--sans);font-weight:760;color:#1A1A1A}
+.ver{background:#1A1A1A;color:#F6F4EF}
+.links{background:#1A1A1A!important;border-radius:999px;padding:4px}
+.links button{color:#F4F1EA!important;background:transparent!important;border-radius:999px!important;font-weight:600}
+.links button.on{background:#fff!important;color:#1A1A1A!important}
+.card,.sb,.finder,.tcard,.tside,.dark2,.library-hero,.idc,.rel-stage,.rel-side,.book-detail,.modal>div,.tile,.stat{background:#F7F5F1!important;border:1px solid #E6E2DA!important;border-radius:22px!important;color:#1A1A1A;box-shadow:none!important}
+.btn,.bigbtn,.cta{border-radius:999px!important}
+.btn.p,.bigbtn,.cta{background:#1A1A1A!important;color:#fff!important}
+.tg.ok{background:#D6F25C;color:#1A1A1A}
+.tg.bad,.tg.w{background:#F3A8A0;color:#1A1A1A}
+.search,.ib,.win-controls button{background:#F7F5F1;border-color:#E6E2DA;border-radius:999px}
+.wrap,.wrapx,.library-shell{max-width:none;width:100%;padding:8px 18px 24px}
+.dash-grid,.stats,.span2,.cols,.idd,.book-detail,.rel-layout,.hero2,.testi,.plan,.fields,.statband{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))!important;align-items:start}
+.dossier .idd{grid-template-columns:1fr!important;justify-items:center}
+.dossier .idl{width:min(760px,100%);text-align:center}
+.dossier .portrait-lg{width:min(360px,74vw);height:auto;aspect-ratio:4/5;margin:8px auto 12px;background:linear-gradient(180deg,#F4F1EB,#E6E0D6)}
+.dossier .secs{width:min(1100px,100%)}
+.life{position:relative;width:100%;overflow:hidden}
+.life ol{display:flex;border-left:0;border-top:2px solid #1A1A1A;margin-top:42px;padding:18px 0 0;overflow-x:auto}
+.life li{flex:1 0 150px;padding:8px 12px 0}
+.life li::before{top:-24px;left:18px;background:#1A1A1A}
+.walker{position:absolute;top:22px;left:4%;width:28px;height:36px;z-index:2;animation:stroll 7s ease-in-out infinite alternate;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 36'><circle cx='14' cy='6' r='4' fill='%231A1A1A'/><path d='M14 11 L14 22 M14 15 L7 20 M14 15 L21 19 M14 22 L8 33 M14 22 L20 33' stroke='%231A1A1A' stroke-width='1.8' fill='none' stroke-linecap='round'/></svg>") center/contain no-repeat}
+@keyframes stroll{from{left:4%}to{left:calc(100% - 40px)}}
+.shelf{background:#F4F1EB!important;box-shadow:inset 0 -10px 0 #E3DCD0!important}
+.book-spine{color:#2A2622}
+.main{min-height:0;overflow:auto}
+.library-section-title span:empty{display:none}
+@media(max-width:900px){.nav{grid-template-columns:1fr;justify-items:center}.topr,.links{justify-self:center}.links{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.walker{animation:none}}
 </style>
 </head>
 <body>
 <canvas id="ns-particles" aria-hidden="true"></canvas>
 <div class="sheet" id="sheet">
   <header class="nav pywebview-drag-region">
-    <div class="brand"><span id="plb"></span><span class="word">novelsims</span><em class="ver">v0.4.0</em></div>
+    <div class="brand"><span id="plb"></span><span class="word">novelsims</span><em class="ver">v0.5.0</em></div>
     <nav class="links" id="nav"></nav>
-    <div class="topr"><label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="text" placeholder="搜索小说或角色" autocomplete="off"></label><span id="status"></span><button class="ib" id="bell" title="失败的请求"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><em id="belln" style="display:none"></em></button><button class="btn p" id="newn" style="height:38px">＋ 新建小说</button><div class="win-controls"><button id="win-min" title="最小化">－</button><button id="win-close" title="关闭">×</button></div></div>
+    <div class="topr"><label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="text" placeholder="搜索小说或角色" autocomplete="off"></label><span id="status"></span><button class="ib" id="bell" title="失败的请求"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><em id="belln" style="display:none"></em></button><button class="btn p" id="newn" style="height:38px">＋ 新建小说</button><div class="win-controls"><button id="win-max" title="最大化">□</button><button id="win-min" title="最小化">－</button><button id="win-close" title="关闭">×</button></div></div>
   </header>
   <div class="main"><div class="ph" id="ph"><h1 id="ttl">概览</h1><span class="chip" id="chip"></span><div class="sub" id="sub"></div></div><div id="page"></div></div>
 </div>
@@ -359,6 +397,7 @@ function pRelations(){
 
 function load(){return api('overview').then(o=>{OV=o;chrome();return({overview:pOverview,library:pLibrary,model:pModel,link:pLink,novels:pNovels,cards:pCards,relations:pRelations,logs:pLogs})[V.p]()}).catch(e=>{$('#page').innerHTML=`<div class="card">无法读取后端数据：${esc(e.message)}</div>`})}
 $('#newn').onclick=()=>{go('novels');newNovel()};$('#bell').onclick=()=>go('logs');
+$('#win-max').onclick=()=>{if(window.pywebview&&window.pywebview.api)window.pywebview.api.maximize()};
 $('#win-min').onclick=()=>{if(window.pywebview&&window.pywebview.api)window.pywebview.api.minimize()};
 $('#win-close').onclick=()=>{if(window.pywebview&&window.pywebview.api)window.pywebview.api.close()};
 $('#q').oninput=e=>{V.q=e.target.value.trim();if(V.p==='library'){V.libQ=V.q;pLibrary()}else if(!['novels','cards'].includes(V.p)){V.cid=null;go('cards')}else load()};
@@ -449,10 +488,10 @@ function pLibrary(){
   const shelves=[]; let bucket=[];
   books.forEach((b,i)=>{bucket.push(b); if(bucket.length>=12 || i===books.length-1){shelves.push(bucket); bucket=[]}});
   const shelfHtml=shelves.map(shelf=>`<div class="shelf">${shelf.map(b=>`<button type="button" class="book-spine" data-book="${esc(b.id)}" title="${esc(b.title)} · ${esc(b.author)}" style="--spine:${tone((b.genre||'')+(b.title||''))}"><span class="spine-title">${esc(b.title)}</span><span class="spine-author">${esc((b.author||'').slice(0,8))}</span></button>`).join('')}</div>`).join('')||'<div class="card empty">没有找到符合条件的作品，试试其他分类或关键词。</div>';
-  $('#page').innerHTML=`<div class="library-shell"><section class="library-hero"><div class="library-meta">NOVELSIMS</div><h2>把故事放回书架。</h2><p>书脊排成一层层横架，多出来的书会换到下一层。点开一本书，再决定要不要检索人物、生成身份卡。</p><div class="bar"><span class="tg">${books.length} 部当前筛选</span><span class="tg">浏览书库不消耗模型额度</span></div></section>
+  $('#page').innerHTML=`<div class="library-shell"><section class="library-hero"><div class="library-meta">NOVELSIMS</div><h2>小说库</h2><p></p><div class="bar"><span class="tg">${books.length} 部当前筛选</span></div></section>
   <div class="library-tabs"><button data-source="global" class="on">名著与类型</button><button data-source="jjwxc">晋江文学城</button></div>
-  <div class="card"><div class="library-section-title"><h3>分类</h3><span>点一下就筛选，不用横着翻</span></div><div class="library-tabs">${cats}</div><div class="library-section-title"><h3>书单</h3><span>编辑整理，不是实时销量</span></div><div class="rank-tabs">${ranks}</div></div>
-  <div class="library-section-title"><h3>${V.libRank==='全部'?'全部在架':esc(V.libRank)}</h3><span>${data.count||books.length} 部 · 悬停抽出，点击打开</span></div>
+  <div class="card"><div class="library-section-title"><h3>分类</h3><span></span></div><div class="library-tabs">${cats}</div><div class="library-section-title"><h3>书单</h3><span></span></div><div class="rank-tabs">${ranks}</div></div>
+  <div class="library-section-title"><h3>${V.libRank==='全部'?'全部在架':esc(V.libRank)}</h3><span>${data.count||books.length} 部</span></div>
   <div class="bookshelf">${shelfHtml}</div>
   <div class="note">${esc(data.ranking_note||'')} 书库是内置目录。身份信息以公开检索结果为准。</div></div>`;
   $$('[data-source]').forEach(b=>b.onclick=()=>{V.libSource=b.dataset.source;V.libQ='';$('#q').value='';pLibrary()});
@@ -477,9 +516,9 @@ function pJjwxc(){
   const jjShelves=[]; let jjBucket=[];
   books.forEach((b,idx)=>{jjBucket.push(b); if(jjBucket.length>=12||idx===books.length-1){jjShelves.push(jjBucket); jjBucket=[]}});
   const cards=jjShelves.map(shelf=>`<div class="shelf">${shelf.map(b=>`<button type="button" class="book-spine" data-jj-book="${esc(b.id)}" title="${esc(b.title)}" style="--spine:${jjTone(b.title)}"><span class="spine-title">${esc(b.title)}</span><span class="spine-author">${esc((b.author||'晋江').slice(0,8))}</span></button>`).join('')}</div>`).join('')||'<div class="card empty">没有找到作品。可以换一个关键词。</div>';
-  $('#page').innerHTML=`<div class="library-shell"><section class="library-hero"><div class="library-meta">NOVELSIMS · JINJIANG LITERATURE CITY</div><h2>从晋江榜单，<br>找到故事里的角色。</h2><p>接入晋江公开排行榜与作品页，读取书名、作者、标签、主角和简介；作品封面优先从官方作品页提取。</p><div class="bar"><span class="tg" style="background:rgba(255,255,255,.16);color:#e9f7f1;border:1px solid rgba(255,255,255,.24)">${books.length} 条结果</span><a class="tg" style="background:rgba(255,255,255,.16);color:#e9f7f1;border:1px solid rgba(255,255,255,.24);padding:5px 10px" href="https://m.jjwxc.com/rank" target="_blank">打开晋江官方榜单 ↗</a></div></section>
+  $('#page').innerHTML=`<div class="library-shell"><section class="library-hero"><div class="library-meta">NOVELSIMS · JINJIANG LITERATURE CITY</div><h2>晋江文学城</h2><p></p><div class="bar"><span class="tg" style="background:rgba(255,255,255,.16);color:#e9f7f1;border:1px solid rgba(255,255,255,.24)">${books.length} 条结果</span><a class="tg" style="background:rgba(255,255,255,.16);color:#e9f7f1;border:1px solid rgba(255,255,255,.24);padding:5px 10px" href="https://m.jjwxc.com/rank" target="_blank">打开晋江官方榜单 ↗</a></div></section>
   <div class="library-tabs" style="margin:0 0 16px"><button data-source="global">名著经典</button><button data-source="jjwxc" class="on">晋江文学城</button></div>
-  <div class="card"><div class="library-section-title"><h3>晋江作品检索</h3><span>支持书名 / 作者 / 角色关键词</span></div><div class="bar" style="margin:12px 0"><input id="jj-q" value="${esc(V.libQ)}" placeholder="输入书名、作者或角色" style="flex:1;min-width:180px"><button class="btn p" id="jj-search">搜索作品</button><button class="btn" id="jj-clear">清空</button></div><div class="library-section-title"><h3>官方排行榜</h3><span>榜单实时读取</span></div><div class="rank-tabs" style="margin:12px 0">${periods}</div><div class="library-tabs">${channels}</div></div>
+  <div class="card"><div class="library-section-title"><h3>晋江作品检索</h3><span></span></div><div class="bar" style="margin:12px 0"><input id="jj-q" value="${esc(V.libQ)}" placeholder="输入书名、作者或角色" style="flex:1;min-width:180px"><button class="btn p" id="jj-search">搜索作品</button><button class="btn" id="jj-clear">清空</button></div><div class="library-section-title"><h3>官方排行榜</h3><span></span></div><div class="rank-tabs" style="margin:12px 0">${periods}</div><div class="library-tabs">${channels}</div></div>
   <div class="library-section-title"><h3>${V.libQ?'搜索结果':(periodNames[V.jjPeriod]||'晋江榜单')+' · '+V.jjChannel}</h3><span>${data.count||0} 部作品</span></div><div class="bookshelf">${cards}</div><div class="note">${esc(data.note||'作品元数据来自晋江公开页面。若站点限制自动读取，程序不会绕过登录、验证码或访问限制。')}</div></div>`;
   $$('[data-source]').forEach(b=>b.onclick=()=>{V.libSource=b.dataset.source;V.libQ='';$('#q').value='';pLibrary()});
   $$('[data-jj-period]').forEach(b=>b.onclick=()=>{V.jjPeriod=b.dataset.jjPeriod;V.libQ='';$('#q').value='';pJjwxc()});
@@ -571,7 +610,7 @@ function cardDetail(){return api('character?id='+V.cid).then(c=>{const ss=c.spee
  const events=[];
  ['original_early','original_mid','original_late','original_ending','extra'].forEach(k=>{if(stg[k]&&stg[k].state)events.push({when:stageName[k]||'经历',text:stg[k].state})});
  (c.canon_memories||[]).forEach(m=>{if(m&&m.content)events.push({when:'经历',text:m.content})});
- const life=events.length?`<div class="life"><h3>生平事迹</h3><ol>${events.map(e=>`<li><b>${esc(e.when)}</b><span>${esc(e.text)}</span></li>`).join('')}</ol></div>`:`<div class="life"><h3>生平事迹</h3><p class="note">目前记下的经历还不多。已有的早年、中段和结局会按时间排在这里。</p></div>`;
+ const life=events.length?`<div class="life"><i class="walker" aria-hidden="true"></i><h3>生平事迹</h3><ol>${events.map(e=>`<li><b>${esc(e.when)}</b><span>${esc(e.text)}</span></li>`).join('')}</ol></div>`:`<div class="life"><i class="walker" aria-hidden="true"></i><h3>生平事迹</h3><p class="note">经历会按时间排在这条线上。</p></div>`;
  const left=`<div class="idl"><div class="portrait-lg">${bust(feminine.test((c.name||'')+(c.identity||'')))}</div><div class="in"><h2>${esc(nm(c.name))}</h2>${(c.alias||[]).length?`<div class="note">又名 ${esc(c.alias.join('、'))}</div>`:''}<p class="prose">${esc(c.identity||'身份还在整理。')}</p><div class="chips">${stag(c.verification_status)}${c.low_data?'<span class="tg w">待补充</span>':''}</div><div class="note">${esc(c.source_novel||'')}</div></div></div>`;
 if(V.edit){$('#page').innerHTML=`<div class="wrap">${head}<div class="idd">${left}<div class="card"><label style="margin-top:0">身份</label><input type="text" id="e-identity" value="${esc(c.identity)}"><label>背景</label><textarea id="e-background">${esc(c.background)}</textarea><div class="g2"><div><label>人生愿望（核心动机）</label><input type="text" id="e-core_motivation" value="${esc(c.core_motivation)}"></div><div><label>核心创伤</label><input type="text" id="e-core_trauma" value="${esc(c.core_trauma)}"></div></div>
   <div class="g2"><div><label>核心特质（每行一条）</label><textarea id="e-core_personality">${esc(lines(c.core_personality))}</textarea></div><div><label>可变特质（每行一条）</label><textarea id="e-variable_personality">${esc(lines(c.variable_personality))}</textarea></div></div>

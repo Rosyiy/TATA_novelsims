@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger("novelsims.window")
 TITLE = "NovelSims"
 QUIT_TEXT = "确定退出 NovelSims 吗？退出后，游戏将无法连接后端。"
-WIDTH, HEIGHT = 1440, 940
+WIDTH, HEIGHT = 1280, 800
 
 
 class NativeWindowApi(object):
@@ -14,6 +14,22 @@ class NativeWindowApi(object):
         window = webview.active_window()
         if window:
             window.minimize()
+        return True
+
+    def maximize(self):
+        import webview
+        window = webview.active_window()
+        if not window:
+            return False
+        try:
+            if getattr(self, "_maximized", False):
+                window.restore()
+                self._maximized = False
+            else:
+                window.maximize()
+                self._maximized = True
+        except Exception:
+            window.toggle_fullscreen()
         return True
 
     def close(self):
@@ -30,7 +46,7 @@ def run_native_window(url, title=TITLE):
         import webview
         window = webview.create_window(
             title, url=url, width=WIDTH, height=HEIGHT,
-            min_size=(1100, 720), resizable=True,
+            min_size=(960, 640), resizable=True,
             frameless=True, easy_drag=False, transparent=True, shadow=True,
             confirm_close=True, background_color="#ECEBE1",
             js_api=NativeWindowApi(),
