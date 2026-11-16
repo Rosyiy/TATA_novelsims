@@ -46,6 +46,8 @@ class AdminApi(object):
             return self.test()
         if route == ("GET", "characters"):
             return self.characters()
+        if route == ("GET", "relations"):
+            return self.relations(query)
         if route == ("GET", "character"):
             card = self.app.characters.get((query.get("id") or [""])[0])
             if card is None:
@@ -208,9 +210,17 @@ class AdminApi(object):
             return self._save_card(cid, card)
         if (method, sub) == ("POST", "card/create"):
             name = str(body.get("name", "")).strip()[:30]
-            if not name:
-                raise ApiError(400, "invalid_request", "角色名不能为空")
-            card = apply_edit(blank_card(name), body.get("patch") or {})
+            title = str(body.get("title") or body.get("novel") or "").strip()[:100]
+            if not name or not title:
+                raise ApiError(400, "search_required", "请同时填写书名和角色名。身份卡必须先做全网检索，不能只凭一个名字保存空卡。")
+            patch = body.get("patch") or {}
+            background = str(patch.get("background") or "")
+            identity = str(patch.get("identity") or "")
+            # A hand-written original still has to be a real dossier, not a blank name.
+            if len(background.strip()) < 40 or not identity.strip():
+                raise ApiError(400, "search_required", "资料还不够。请先按书名和角色名做全网检索；如果这是完全自设的人物，请写出至少一段身份和经历后再保存。")
+            card = apply_edit(blank_card(name), patch)
+            card["source_novel"] = title
             card["verification_status"], card["edited"] = "user_defined", True
             cid = a.characters.save_generated(card, "manual:" + uuid.uuid4().hex[:10])
             return self._save_card(cid, self._card(cid))
@@ -274,6 +284,63 @@ class AdminApi(object):
                            "tcp": {"on": cfg.enable_tcp, "addr": "%s:%d" % (cfg.host, cfg.tcp_port)},
                            "file": {"on": cfg.enable_file_ipc, "addr": cfg.data_dir}},
         }
+
+    def relations(self, query):
+        novel_id = self._q(query, "novel_id")
+        novels = [{"novel_id": n["novel_id"], "title": n.get("title") or ""} for n in self.app.novels.store.list()]
+        cards = self.app.characters.list_all()
+        if novel_id:
+            cards = [c for c in cards if c.get("novel_id") == novel_id]
+        groups = (
+            (("父亲", "母亲", "兄弟", "姐妹", "哥哥", "弟弟", "姐姐", "妹妹", "父子", "父女", "母子", "母女", "家人", "爹", "娘"), "家人"),
+            (("夫妻", "恋人", "爱人", "未婚夫", "未婚妻", "情侣", "丈夫", "妻子"), "恋人"),
+            (("师徒", "师父", "师傅", "徒弟", "老师"), "师徒"),
+            (("敌人", "仇人", "对手", "宿敌", "敌对"), "对手"),
+            (("朋友", "挚友", "好友", "旧友"), "朋友"),
+            (("主仆", "下属", "主人"), "主仆"),
+        )
+
+        def label_of(text):
+            text = text or ""
+            for words, label in groups:
+                if any(w in text for w in words):
+                    return label
+            return "关联"
+
+        nodes, name_to_id = [], {}
+        for c in cards:
+            name_to_id[c.get("name") or ""] = c["character_id"]
+            nodes.append({
+                "id": c["character_id"], "name": c.get("name") or "",
+                "identity": c.get("identity") or "", "novel_id": c.get("novel_id") or "",
+                "novel": c.get("source_novel") or "", "ghost": False,
+            })
+        edges, seen = [], set()
+        for c in cards:
+            rels = [r for r in (c.get("relationships") or []) if isinstance(r, dict)]
+            known = {n["name"] for n in nodes if n["name"] and n["name"] != c.get("name")}
+            have = {r.get("name") for r in rels}
+            blob = "\n".join(filter(None, [c.get("background") or "", c.get("identity") or ""]))
+            for other in known:
+                if other not in have and other in blob:
+                    rels.append({"name": other, "relation": label_of(blob[max(0, blob.find(other) - 12):blob.find(other) + 24])})
+            for r in rels:
+                other = (r.get("name") or "").strip()
+                if not other or other == c.get("name"):
+                    continue
+                target = name_to_id.get(other)
+                if not target:
+                    target = "name:" + other
+                    name_to_id[other] = target
+                    nodes.append({"id": target, "name": other, "identity": "", "novel_id": c.get("novel_id") or "",
+                                  "novel": c.get("source_novel") or "", "ghost": True})
+                key = tuple(sorted((c["character_id"], target)))
+                if key in seen:
+                    continue
+                seen.add(key)
+                edges.append({"source": c["character_id"], "target": target, "target_name": other,
+                              "relation": label_of(r.get("relation") or "")})
+        return {"nodes": nodes, "edges": edges, "novels": novels, "novel_id": novel_id}
 
     def characters(self):
         titles = dict((n["novel_id"], n["title"]) for n in self.app.novels.store.list())

@@ -14,7 +14,8 @@ KEY_FIELDS = ("identity", "background", "core_personality")
 DEFAULT_FORBIDDEN_TERMS = ["我是AI", "语言模型", "人工智能"]
 
 SYSTEM = (
-    "你是小说人物资料整理员。只根据下面【资料】里的文字整理人物身份卡，只输出一个JSON对象。\n"
+    "你是小说人物资料整理员。只根据下面【资料】里的文字整理一份饱满的人物身份卡，只输出一个JSON对象。\n"
+    "尽量写全资料里已经出现的：外貌形象、性格、身世背景、关键经历、人物关系、原话。资料里有的句子要收进来，不要只留一句空泛介绍。\n"
     "硬性规则：\n"
     "1. 资料没写的内容，字符串留空\"\"，列表留[]，并把字段名写进 missing_fields。绝不补全、绝不凭你对这部小说的记忆回答。\n"
     "2. relationships、timeline.stages、canon_memories 的每一条，必须在 sources 里写出依据的资料编号（如\"S2\"）；写不出依据就不要写这一条。\n"

@@ -51,7 +51,7 @@ class SettingsStore(object):
         self._lock = threading.Lock()
         self._data = {"provider": default_provider if default_provider in BY_ID else "mock",
                       "providers": {}, "temperature": 0.7, "max_tokens": 800, "consent": {},
-                      "search": {"engines": ["baidu", "quark", "sogou", "bing", "zhipu"], "max_pages": 16}}
+                      "search": {"engines": ["baidu", "quark", "sogou", "bing", "zhipu"], "max_pages": 30}}
         self._secrets = {}
         self._load()
 
@@ -70,7 +70,7 @@ class SettingsStore(object):
         sc = self._data.setdefault("search", {"engines": ["bing", "zhipu"], "max_pages": 10})
         if sc.get("engines") in (["wikipedia", "bing"], ["bing", "zhipu"]):
             sc["engines"] = ["baidu", "quark", "sogou", "bing", "zhipu"]
-            sc["max_pages"] = max(16, int(sc.get("max_pages", 16)))
+            sc["max_pages"] = max(30, int(sc.get("max_pages", 30)))
 
     @staticmethod
     def _atomic(path, obj, private=False):

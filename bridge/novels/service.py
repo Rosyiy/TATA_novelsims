@@ -271,9 +271,9 @@ class NovelService(object):
             n_ok = len(result["characters"])
             result["can_reextract"] = True
             if n_ok == 0 and not any("已确认" in w for w in result["warnings"]):
-                self.store.task_update(tid, state="error", progress=100, result=dict(result, error_code="extraction_failed"),
-                                       message="资料已经找到，但规则提取器没有给出可用结果，所以没有生成身份卡。原因见下方；修好模型设置后可点“重新整理人物”（不用重新搜索）。")
-                self.store.set_status(nid, "error")
+                self.store.task_update(tid, state="needs_manual", progress=100, result=result,
+                                       message="检索已完成，但公开资料还不够写成有血有肉的身份卡。请看下方找到的片段，改用更准确的人物名后再检索。没有保存空卡。")
+                self.store.set_status(nid, "needs_manual")
                 return
             self.store.task_update(tid, state="done", progress=100, result=result,
                                    message="完成：生成 %d 张身份卡（请逐张校对后确认）" % n_ok)
@@ -305,22 +305,39 @@ class NovelService(object):
             '"%s" 小说 人物分析 人物关系图' % t,
             '"%s" 主角 配角 名单' % t,
         ]
-        # More targeted per-character queries for higher hit rate
+        # One query per character first (appearance, plot, relationships, quotes),
+        # then extra angles, capped at 18 so every named person is represented.
         templates = [
-            '"%s" "%s" 人物介绍',
-            '"%s" "%s" 性格 经历 背景',
-            '"%s" "%s" 人物关系 结局',
-            '"%s" "%s" 角色设定',
+            '"%s" "%s" 外貌 形象 性格',
+            '"%s" "%s" 经历 背景 剧情 名场面',
+            '"%s" "%s" 人物关系 家人 恋人 对手',
+            '"%s" "%s" 台词 名言 经典语录',
             'site:baike.baidu.com "%s" "%s"',
         ]
-        for c in novel["characters"][:18]:
-            for template in templates:
-                qs.append(template % (t, c))
-        # Keep a useful but bounded query set; 18 total per run, with every character represented where possible.
-        if len(qs) > 28:
-            base, targeted = qs[:6], qs[6:]
-            qs = base + targeted[:20]
-        return list(dict.fromkeys(q.replace("  ", " ").strip() for q in qs))
+        chars = [c for c in novel.get("characters") or [] if c][:18]
+        per_char = []
+        for template in templates:
+            for c in chars:
+                per_char.append(template % (t, c))
+        ordered = []
+        seen = set()
+        for q in qs + per_char:
+            q = " ".join(q.split())
+            if q and q not in seen:
+                seen.add(q)
+                ordered.append(q)
+        if not chars:
+            return ordered[:18]
+        book_level = [q for q in ordered if not any(('"%s"' % c) in q for c in chars)]
+        by_char = {c: [q for q in ordered if ('"%s"' % c) in q] for c in chars}
+        picked = book_level[:6]
+        # Round-robin so the first 18 queries cover every character before repeats.
+        while len(picked) < 18 and any(by_char.values()):
+            for c in chars:
+                bucket = by_char[c]
+                if bucket and len(picked) < 18:
+                    picked.append(bucket.pop(0))
+        return picked[:18]
 
     def _collect_web(self, tid, novel, result):
         nid, title, author = novel["novel_id"], novel["title"], novel["author"]
@@ -331,7 +348,7 @@ class NovelService(object):
         # Run independent provider/query pairs concurrently. A slow engine no longer blocks every other source.
         jobs = [(e, q) for q in queries for e in engines]
         completed = 0
-        with ThreadPoolExecutor(max_workers=8) as executor:
+        with ThreadPoolExecutor(max_workers=min(18, max(1, len(jobs)))) as executor:
             future_map = {executor.submit(e.search, q, 10): (e, q) for e, q in jobs}
             for future in as_completed(future_map):
                 e, q = future_map[future]
@@ -352,6 +369,7 @@ class NovelService(object):
             pool.setdefault(filters.canonical_url(url), SearchResult(title, url, "", "direct", 0))
         result["engine_report"] = report
         result["found"] = len(pool)
+        result["query_count"] = len(queries)
 
         names = [title] + novel["characters"]
         ranked = []
@@ -361,7 +379,8 @@ class NovelService(object):
             score += sum(1 for c in novel["characters"] if c in (r.title + r.snippet))
             ranked.append((score - r.rank * 0.1, url, r, kind))
         ranked.sort(key=lambda t: -t[0])
-        max_pages = int(self.app.settings.search_public()["max_pages"])
+        # Identity-card creation always reads up to 30 pages, the product cap.
+        max_pages = 30
         used, fetched = [], 0
         for i, (score, url, r, kind) in enumerate(ranked):
             if fetched >= max_pages + 4 or len(used) >= max_pages:
@@ -540,6 +559,11 @@ class NovelService(object):
             unique.append((src, sentence))
         source_ids = list(dict.fromkeys(src["id"] for src, _ in unique))
         def refs(src): return [src["id"]]
+        def _sent_score(sentence):
+            keys = ("外貌", "容貌", "长相", "眼睛", "性格", "经历", "后来", "最终", "因为",
+                    "父亲", "母亲", "恋人", "爱人", "对手", "师父", "朋友", "说道", "认为", "为了")
+            return sum(2 for k in keys if k in sentence) + min(len(sentence), 120) / 120.0
+        unique.sort(key=lambda item: _sent_score(item[1]), reverse=True)
         all_text = "。".join(x[1] for x in unique)
         traits_map = [
             (("冷漠", "冷淡", "疏离", "寡言", "沉默"), "冷静克制"),
@@ -561,7 +585,21 @@ class NovelService(object):
             if m:
                 identity = m.group(1).strip(" ，。；")
                 break
-        background = "\n".join(x[1] for x in unique[:8])[:600]
+        appearance = ""
+        for _, sentence in unique:
+            if any(k in sentence for k in ("外貌", "容貌", "长相", "眼睛", "头发", "身材", "面容", "穿着", "眉眼")):
+                appearance = sentence[:180]
+                break
+        background_bits = []
+        if appearance:
+            background_bits.append("形象：" + appearance)
+        for _, sentence in unique:
+            if sentence == appearance:
+                continue
+            background_bits.append(sentence)
+            if len(background_bits) >= 12:
+                break
+        background = "\n".join(background_bits)[:600]
         motivation = ""
         for _, sentence in unique:
             if any(k in sentence for k in ("为了", "希望", "渴望", "目标", "想要", "复仇", "寻找", "守护")):
@@ -578,7 +616,19 @@ class NovelService(object):
             for other in novel.get("characters", []):
                 if other == name or other not in sentence:
                     continue
-                relation = next((k for k in ("父亲", "母亲", "兄弟", "姐妹", "夫妻", "恋人", "未婚夫", "未婚妻", "师徒", "主仆", "旧友", "朋友", "敌人", "仇人") if k in sentence), "关联人物")
+                groups = (
+                    (("父亲", "母亲", "兄弟", "姐妹", "哥哥", "弟弟", "姐姐", "妹妹", "父子", "父女", "母子", "母女", "家人"), "家人"),
+                    (("夫妻", "恋人", "爱人", "未婚夫", "未婚妻", "情侣", "丈夫", "妻子"), "恋人"),
+                    (("师徒", "师父", "师傅", "徒弟", "老师"), "师徒"),
+                    (("敌人", "仇人", "对手", "宿敌", "敌对"), "对手"),
+                    (("朋友", "挚友", "好友", "旧友"), "朋友"),
+                    (("主仆", "下属", "主人"), "主仆"),
+                )
+                relation = "关联"
+                for words, label in groups:
+                    if any(k in sentence for k in words):
+                        relation = label
+                        break
                 item = {"name": other, "relation": relation, "stage": "", "sources": refs(src)}
                 if not any(x["name"] == other for x in relations): relations.append(item)
         # Exact source quotes only.
@@ -634,6 +684,34 @@ class NovelService(object):
         }
         return card
 
+    @staticmethod
+    def _card_is_substantial(card):
+        """A name-only or one-sentence stub is not a card worth saving."""
+        background = (card.get("background") or "").strip()
+        identity = (card.get("identity") or "").strip()
+        traits = card.get("core_personality") or []
+        rels = card.get("relationships") or []
+        mems = card.get("canon_memories") or []
+        quotes = ((card.get("speech_style") or {}).get("sample_phrases") or [])
+        if len(background) < 40:
+            return False
+        richness = 0
+        if len(background) >= 80:
+            richness += 2
+        if identity:
+            richness += 1
+        if len(traits) >= 1:
+            richness += 1
+        if rels:
+            richness += 1
+        if mems:
+            richness += 1
+        if quotes:
+            richness += 1
+        if (card.get("core_motivation") or "").strip():
+            richness += 1
+        return richness >= 3
+
     def _extract_all(self, tid, novel, used, result):
         nid, chars = novel["novel_id"], novel["characters"]
         origin = "mixed" if len({u["kind"] == "user" for u in used}) == 2 else ("user_text" if used[0]["kind"] == "user" else "web")
@@ -647,8 +725,12 @@ class NovelService(object):
                 result["warnings"].append("「%s」的身份卡已确认，重新检索不会覆盖它" % name)
                 continue
             card = self._deterministic_card(name, novel, used, origin, nid)
-            if not card["background"]:
-                result["warnings"].append("「%s」没有检索到包含该人物名的有效段落，已保留信息缺口" % name)
+            if not self._card_is_substantial(card):
+                excerpt = (card.get("background") or "").replace("\n", " ")[:80]
+                result["warnings"].append(
+                    "「%s」检索到 %d 条提到该名字的资料，但还不够写成饱满的身份卡%s。请核对角色名，或补充更具体的称呼后再检索。未保存空卡。"
+                    % (name, len(card.get("info_sources") or []), ("（已看到：%s）" % excerpt) if excerpt else ""))
+                continue
             cid = self.app.characters.save_generated(card, key, nid)
             self.app.memories.replace_canon(cid, card["canon_memories"])
             result["characters"].append({"name": name, "character_id": cid, "low_data": card["low_data"],
