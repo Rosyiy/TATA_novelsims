@@ -5,7 +5,9 @@ Response: {"req_id": str, "status": int, "body": obj}\n
 """
 import json
 import logging
+import socket
 import socketserver
+import sys
 import threading
 
 log = logging.getLogger("novelsims.tcp")
@@ -43,8 +45,16 @@ def make_handler(router):
 
 
 class _Server(socketserver.ThreadingTCPServer):
-    allow_reuse_address = True
+    # SO_REUSEADDR on Windows lets a second NovelSims bind the same port and
+    # silently serve the old process's pages. Exclusive use makes the second
+    # start fail instead.
+    allow_reuse_address = False
     daemon_threads = True
+
+    def server_bind(self):
+        if sys.platform == "win32" and hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
 
 
 def start_tcp(router, host, port):

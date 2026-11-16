@@ -1,4 +1,5 @@
 """Entry point:  python -m bridge.main [--llm ollama --ollama-model qwen2.5:7b]"""
+import json
 import logging
 import os
 import sys
@@ -30,6 +31,31 @@ def _setup_logging(data_dir):
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
 
+def _port_taken(port):
+    """Return a Chinese explanation if something is already listening, else ''."""
+    import socket
+    import urllib.request
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:%d/api/v1/health" % port, timeout=0.6) as resp:
+            raw = resp.read(500)
+        ver = "未知版本"
+        try:
+            ver = str(json.loads(raw.decode("utf-8", "replace")).get("version") or ver)
+        except ValueError:
+            pass
+        return "8765/8766 上已有 NovelSims %s 在回答。请先关掉旧窗口或任务管理器中的 NovelSims.exe / pythonw.exe" % ver
+    except Exception:
+        pass
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(0.4)
+    try:
+        if sock.connect_ex(("127.0.0.1", port)) == 0:
+            return "端口 %d 已被其他程序占用。若刚关过 NovelSims，请在任务管理器中结束残留进程后再打开" % port
+    finally:
+        sock.close()
+    return ""
+
+
 def main(argv=None):
     cfg = load_config(argv)
     try:
@@ -45,6 +71,10 @@ def main(argv=None):
     for cid, name in app.imported:
         log.info("character %s  %s", cid, name)
 
+    taken = _port_taken(cfg.http_port) or _port_taken(cfg.tcp_port)
+    if taken:
+        log.error("端口已被占用：%s。请先关闭旧的 NovelSims / NovelSims_Bridge / pythonw，再重新打开。", taken)
+        return 1
     servers = []
     try:
         if cfg.enable_http:
@@ -54,7 +84,7 @@ def main(argv=None):
             servers.append(start_tcp(app.router, cfg.host, cfg.tcp_port))
             log.info("TCP   %s:%d", cfg.host, cfg.tcp_port)
     except OSError as exc:
-        log.error("端口被占用或无法监听（%s）。可能已经有一个 NovelSims 后端在运行，请先关闭旧窗口。", exc)
+        log.error("端口被占用或无法监听（%s）。请结束仍在运行的旧 NovelSims 后再打开。", exc)
         for s in servers:
             s.shutdown()
             s.server_close()

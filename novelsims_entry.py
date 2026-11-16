@@ -20,10 +20,9 @@ EXE_NAME = os.path.basename(sys.executable or "").lower()
 DEBUG = "debug" in EXE_NAME or os.environ.get("NOVELSIMS_DEBUG") == "1"
 
 EXIT_HINTS = {
-    1: "端口 8765/8766 被占用或无法监听。\n很可能已经有一个 NovelSims 在运行（请检查任务栏 / 任务管理器），"
-       "或者其它程序占用了这些端口。\n"
-       "如果日志里是 WinError 10013，也可能是 Windows（Hyper-V/WSL）保留了这些端口，"
-       "可在管理员命令行运行 netsh int ipv4 show excludedportrange protocol=tcp 查看。",
+    1: "端口 8765 或 8766 已被占用，所以这次没有启动新的窗口。\n"
+       "多半还有一个旧的 NovelSims 或 NovelSims_Bridge 在运行。请打开任务管理器，结束 NovelSims.exe 和 pythonw.exe 后再试。\n"
+       "新程序不会再悄悄连上旧后端。",
     2: "桌面窗口无法启动。\n请确认已安装 Microsoft Edge WebView2 Runtime 和 .NET Framework 4.8，"
        "并检查杀毒软件是否拦截了 NovelSims。\n"
        "WebView2 下载：https://developer.microsoft.com/microsoft-edge/webview2/",

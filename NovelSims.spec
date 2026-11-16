@@ -45,6 +45,7 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name="NovelSims",
+    icon=str(ROOT / "assets" / "novelsims.ico"),
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

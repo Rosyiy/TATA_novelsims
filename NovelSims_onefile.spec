@@ -50,6 +50,7 @@ exe = EXE(
     a.datas,
     [],
     name="NovelSims",
+    icon=str(ROOT / "assets" / "novelsims.ico"),
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -1,7 +1,7 @@
 ﻿; NovelSims 一键安装程序 (Inno Setup 6)
 #define MyAppName "NovelSims"
 #ifndef MyAppVersion
-#define MyAppVersion "0.3.9"
+#define MyAppVersion "0.4.0"
 #endif
 #define MyAppExe "NovelSims.exe"
 #define SrcDir "dist\onedir\NovelSims"
@@ -31,6 +31,7 @@ CloseApplications=yes
 UninstallDisplayIcon={app}\{#MyAppExe}
 UninstallDisplayName={#MyAppName} {#MyAppVersion}
 SetupLogging=yes
+SetupIconFile=assets\novelsims.ico
 
 [Languages]
 Name: "chs"; MessagesFile: "ChineseSimplified.isl"
@@ -97,6 +98,35 @@ begin
   else
     Result := ExpandConstant('{localappdata}\Programs\NovelSims');
   ChosenDefaultDir := Result;
+end;
+
+function ProcessRunning(const ImageName: String): Boolean;
+var
+  WMI, Items: Variant;
+begin
+  Result := False;
+  try
+    WMI := CreateOleObject('WbemScripting.SWbemLocator');
+    Items := WMI.ConnectServer('.', 'root\CIMV2').ExecQuery('SELECT Name FROM Win32_Process WHERE Name="' + ImageName + '"');
+    Result := (Items.Count > 0);
+  except
+    Result := False;
+  end;
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+begin
+  Result := '';
+  while ProcessRunning('TS4_x64.exe') do
+  begin
+    if MsgBox('检测到《模拟人生4》正在运行。' + #13#10 + #13#10 +
+      '游戏打开时无法复制模组（NovelSims.package 会被占用）。请先完全退出游戏，然后点“确定”继续；点“取消”则退出安装。',
+      mbConfirmation, MB_OKCANCEL) = IDCANCEL then
+    begin
+      Result := '已取消安装。请先关闭《模拟人生4》，再重新运行 NovelSims 安装程序。';
+      exit;
+    end;
+  end;
 end;
 
 function WebView2Installed(): Boolean;

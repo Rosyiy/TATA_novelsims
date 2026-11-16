@@ -31,8 +31,8 @@ def run_native_window(url, title=TITLE):
         window = webview.create_window(
             title, url=url, width=WIDTH, height=HEIGHT,
             min_size=(1100, 720), resizable=True,
-            frameless=False, easy_drag=False, shadow=True,
-            confirm_close=True, background_color="#101b2d",
+            frameless=True, easy_drag=False, transparent=True, shadow=True,
+            confirm_close=True, background_color="#ECEBE1",
             js_api=NativeWindowApi(),
             localization={"global.quitConfirmation": QUIT_TEXT},
         )

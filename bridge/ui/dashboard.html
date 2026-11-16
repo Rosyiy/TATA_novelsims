@@ -168,7 +168,7 @@ textarea{min-height:90px;resize:vertical}
 }
 
 
-/* 0.3.9 Aurelis: warm paper, burgundy, serif numbers */
+/* 0.4.0 Aurelis: warm paper, burgundy, serif numbers */
 :root{--bg:#ECEBE1;--paper:#E6E2D6;--ink:#2C211C;--muted:#7A6E66;--line:#D4CFC2;--accent:#5A1A1A;--accent-2:#F4E7E4;--wine:#5A1A1A;--serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun","Playfair Display","Times New Roman",serif}
 html,body,.sheet{background:#ECEBE1!important;color:#2C211C!important}
 h1,h2,h3,.ph h1,.sb b,.ht h1,.library-hero h2,.library-section-title h3,.nm,.stat b,.feat h2,.book-detail h2{font-family:var(--serif)!important;font-weight:560;letter-spacing:-.02em;color:#2C211C}
@@ -183,7 +183,7 @@ h1,h2,h3,.ph h1,.sb b,.ht h1,.library-hero h2,.library-section-title h3,.nm,.sta
 .btn.p,.cta,.bigbtn{background:#5A1A1A!important;color:#F7F3EA!important;border-color:transparent!important;border-radius:999px}
 .note,.sub,.fs,.who,.hs,.ds{color:#7A6E66}
 .shelf{background:#EFEBE1!important;box-shadow:inset 0 -12px 0 #D2C8B6, 0 12px 18px rgba(70,48,28,.06)!important}
-.book-spine{color:#F7F3EA}
+.book-spine{color:#3A2A24}
 .book-cover{background:linear-gradient(165deg,#3A1212,#5A1A1A 58%,#C4B49A)!important}
 .idc .band,.idl .band{background:linear-gradient(120deg,#E7E0D2,#D9CBBA)!important}
 .trait,.chip,.tg.in,.pill{background:#F4E7E4;color:#5A1A1A}
@@ -211,13 +211,43 @@ h1,h2,h3,.ph h1,.sb b,.ht h1,.library-hero h2,.library-section-title h3,.nm,.sta
 .gauge-wrap{display:flex;align-items:flex-end;gap:8px}
 .library-hero{background:linear-gradient(160deg,#EFEBE1,#E4D9CC)!important}
 @media(max-width:980px){.dash-grid,.span2,.stats{grid-template-columns:1fr}.span2{grid-column:auto}}
+
+/* 0.4.0 frameless window, carved frame, portraits, timeline */
+html,body{background:transparent!important}
+.sheet{background:#ECEBE1!important;border-radius:22px;overflow:hidden;height:100vh;box-shadow:0 0 0 1px rgba(90,26,26,.45), inset 0 0 0 7px rgba(90,26,26,.06), inset 0 0 0 8px rgba(247,243,234,.35)}
+.sheet::before{content:"";pointer-events:none;position:absolute;inset:11px;border-radius:14px;z-index:6;
+  background:
+    radial-gradient(circle at 0 0, transparent 14px, rgba(90,26,26,.45) 15px, rgba(90,26,26,.45) 16px, transparent 17px),
+    radial-gradient(circle at 100% 0, transparent 14px, rgba(90,26,26,.45) 15px, rgba(90,26,26,.45) 16px, transparent 17px),
+    radial-gradient(circle at 0 100%, transparent 14px, rgba(90,26,26,.45) 15px, rgba(90,26,26,.45) 16px, transparent 17px),
+    radial-gradient(circle at 100% 100%, transparent 14px, rgba(90,26,26,.45) 15px, rgba(90,26,26,.45) 16px, transparent 17px);
+  border:1px solid rgba(90,26,26,.28)}
+.nav,.main,.ph{position:relative;z-index:7}
+.pywebview-drag-region{ -webkit-app-region:drag }
+.win-controls,.win-controls button,.links button,.topr button,.topr input,.search{ -webkit-app-region:no-drag }
+.library-hero,.dash-head{position:relative}
+.library-hero::after,.dash-head::after{content:"";position:absolute;right:8px;top:-6px;width:120px;height:90px;opacity:.22;pointer-events:none;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 90'><path d='M70 82c8-22 8-40 0-58 10 6 22 8 32 4-8 16-8 34 0 52-12-2-24 0-32 2z' fill='none' stroke='%235A1A1A' stroke-width='1.4'/><path d='M60 20c6 10 8 24 6 40' fill='none' stroke='%235A1A1A' stroke-width='1.2'/><circle cx='78' cy='22' r='8' fill='none' stroke='%235A1A1A'/><path d='M70 18c2-6 10-8 14-4' fill='none' stroke='%235A1A1A'/></svg>") center/contain no-repeat}
+.dossier .card h3{font-size:22px;margin:0 0 8px}
+.dossier .prose{font-size:16px;line-height:1.75;color:#2C211C}
+.portrait-lg{width:168px;height:210px;border-radius:18px;background:linear-gradient(180deg,#E7D9C8,#D7C4AE);display:grid;place-items:center;margin-bottom:12px;border:1px solid rgba(90,26,26,.2)}
+.portrait-lg svg{width:140px;height:180px}
+.life{margin:0 0 12px;padding:8px 4px 4px 8px}
+.life ol{list-style:none;margin:8px 0 0;padding:0;border-left:2px solid rgba(90,26,26,.35)}
+.life li{position:relative;padding:0 0 14px 16px}
+.life li::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:99px;background:#5A1A1A}
+.life b{display:block;font-family:var(--serif);color:#5A1A1A}
+.cols,.idd{align-items:start}
+.card{min-height:0}
+.empty,.card.empty{padding:16px!important}
+.book-grid{display:none}
 </style>
 </head>
 <body>
 <canvas id="ns-particles" aria-hidden="true"></canvas>
 <div class="sheet" id="sheet">
-  <header class="nav">
-    <div class="brand"><span id="plb"></span><span class="word">novelsims</span><em class="ver">v0.3.9</em></div>
+  <header class="nav pywebview-drag-region">
+    <div class="brand"><span id="plb"></span><span class="word">novelsims</span><em class="ver">v0.4.0</em></div>
     <nav class="links" id="nav"></nav>
     <div class="topr"><label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="text" placeholder="搜索小说或角色" autocomplete="off"></label><span id="status"></span><button class="ib" id="bell" title="失败的请求"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><em id="belln" style="display:none"></em></button><button class="btn p" id="newn" style="height:38px">＋ 新建小说</button><div class="win-controls"><button id="win-min" title="最小化">－</button><button id="win-close" title="关闭">×</button></div></div>
   </header>
@@ -244,7 +274,7 @@ let V={p:'library',nid:null,cid:null,edit:false,tab:'cards',sel:null,q:'',ft:'al
 const ago=s=>s==null?'还没有':s<60?Math.round(s)+' 秒前':s<3600?Math.round(s/60)+' 分钟前':Math.round(s/3600)+' 小时前';
 const dom=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return ''}};
 const match=(...f)=>!V.q||f.join(' ').toLowerCase().includes(V.q.toLowerCase());
-function chrome(){$('#plb').innerHTML=PLUMB(15);
+function chrome(){$('#plb').innerHTML='<svg viewBox="0 0 24 24" width="18" aria-hidden="true"><path d="M5 4h6a4 4 0 0 1 4 4v12H9a4 4 0 0 0-4 4V4z" fill="#5A1A1A"/><path d="M19 4h-6v16h6a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" fill="#8C4A3A"/></svg>';
  $('#nav').innerHTML=Object.keys(PAGES).map(k=>`<button data-p="${k}" class="${k===V.p?'on':''}">${PAGES[k][0]}</button>`).join('');
  $$('#nav button').forEach(b=>b.onclick=()=>{V.cid=null;V.edit=false;go(b.dataset.p)});
  const ov=V.p==='overview';$('#ph').style.display=ov?'none':'flex';$('#ttl').textContent=PAGES[V.p][0];$('#sub').textContent=PAGES[V.p][1];$('#chip').textContent=PAGES[V.p][2];$('#chip').style.display=PAGES[V.p][2]?'':'none';
@@ -414,7 +444,7 @@ function pLibrary(){
   const books=data.books||[];
   const cats=(data.categories||[]).map(c=>`<button data-cat="${esc(c)}" class="${V.libCategory===c?'on':''}">${esc(c)}</button>`).join('');
   const ranks=(data.ranks||[]).map(r=>`<button data-rank="${esc(r)}" class="${V.libRank===r?'on':''}">${esc(r==='全部'?'全部':r)}</button>`).join('');
-  const pal=['#5A1A1A','#7A2E2E','#3E2A24','#6B3A2A','#4A3B32','#8C4A3A','#2F3A32','#6E2430','#53443A','#7A3E55'];
+  const pal=['#E7D3C5','#E4C9C4','#D5DCC8','#E7D7A8','#EADFD4','#D5DEDC','#F0D5C8','#E6DDD2','#E7D0DA','#DCE3D4'];
   const tone=s=>{let h=0;for(const ch of String(s||''))h=(h*33+ch.charCodeAt(0))>>>0;return pal[h%pal.length]};
   const shelves=[]; let bucket=[];
   books.forEach((b,i)=>{bucket.push(b); if(bucket.length>=12 || i===books.length-1){shelves.push(bucket); bucket=[]}});
@@ -442,11 +472,15 @@ function pJjwxc(){
   const books=data.books||[];
   const periods=(data.periods||Object.keys(periodNames).map(id=>({id,name:periodNames[id]}))).map(x=>`<button data-jj-period="${esc(x.id)}" class="${V.jjPeriod===x.id?'on':''}">${esc(x.name)}</button>`).join('');
   const channels=(data.channels||['全部','言情','纯爱','原创','衍生/轻小说','无CP+','百合']).map(x=>`<button data-jj-channel="${esc(x)}" class="${V.jjChannel===x?'on':''}">${esc(x)}</button>`).join('');
-  const cards=books.map(b=>`<button class="book-card" data-jj-book="${esc(b.id)}">${b.cover_url?`<div class="book-cover jj-cover"><img src="${esc(b.cover_url)}" alt="${esc(b.title)}封面" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" onerror="this.remove();this.parentNode.classList.add('cover-missing')"></div>`:bookCover({title:b.title,cover:'literary'})}<span class="book-rank">${esc(b.channel||'晋江作品')} · ${esc(b.rank||'')}</span><div class="book-info"><div class="book-title">${esc(b.title)}</div><div class="book-author">${esc(b.author||'作者待读取')} · 晋江文学城</div><div class="book-tags"><span>公开作品</span><span>查看封面/主角</span></div></div></button>`).join('')||'<div class="card empty">没有找到作品。可以换一个关键词，或打开晋江原站查看。</div>';
+  const jjPal=['#E7D3C5','#E4C9C4','#D5DCC8','#E7D7A8','#EADFD4','#D5DEDC','#F0D5C8','#E6DDD2'];
+  const jjTone=s=>{let h=0;for(const ch of String(s||''))h=(h*33+ch.charCodeAt(0))>>>0;return jjPal[h%jjPal.length]};
+  const jjShelves=[]; let jjBucket=[];
+  books.forEach((b,idx)=>{jjBucket.push(b); if(jjBucket.length>=12||idx===books.length-1){jjShelves.push(jjBucket); jjBucket=[]}});
+  const cards=jjShelves.map(shelf=>`<div class="shelf">${shelf.map(b=>`<button type="button" class="book-spine" data-jj-book="${esc(b.id)}" title="${esc(b.title)}" style="--spine:${jjTone(b.title)}"><span class="spine-title">${esc(b.title)}</span><span class="spine-author">${esc((b.author||'晋江').slice(0,8))}</span></button>`).join('')}</div>`).join('')||'<div class="card empty">没有找到作品。可以换一个关键词。</div>';
   $('#page').innerHTML=`<div class="library-shell"><section class="library-hero"><div class="library-meta">NOVELSIMS · JINJIANG LITERATURE CITY</div><h2>从晋江榜单，<br>找到故事里的角色。</h2><p>接入晋江公开排行榜与作品页，读取书名、作者、标签、主角和简介；作品封面优先从官方作品页提取。</p><div class="bar"><span class="tg" style="background:rgba(255,255,255,.16);color:#e9f7f1;border:1px solid rgba(255,255,255,.24)">${books.length} 条结果</span><a class="tg" style="background:rgba(255,255,255,.16);color:#e9f7f1;border:1px solid rgba(255,255,255,.24);padding:5px 10px" href="https://m.jjwxc.com/rank" target="_blank">打开晋江官方榜单 ↗</a></div></section>
   <div class="library-tabs" style="margin:0 0 16px"><button data-source="global">名著经典</button><button data-source="jjwxc" class="on">晋江文学城</button></div>
   <div class="card"><div class="library-section-title"><h3>晋江作品检索</h3><span>支持书名 / 作者 / 角色关键词</span></div><div class="bar" style="margin:12px 0"><input id="jj-q" value="${esc(V.libQ)}" placeholder="输入书名、作者或角色" style="flex:1;min-width:180px"><button class="btn p" id="jj-search">搜索作品</button><button class="btn" id="jj-clear">清空</button></div><div class="library-section-title"><h3>官方排行榜</h3><span>榜单实时读取</span></div><div class="rank-tabs" style="margin:12px 0">${periods}</div><div class="library-tabs">${channels}</div></div>
-  <div class="library-section-title"><h3>${V.libQ?'搜索结果':(periodNames[V.jjPeriod]||'晋江榜单')+' · '+V.jjChannel}</h3><span>${data.count||0} 部作品</span></div><div class="book-grid">${cards}</div><div class="note">${esc(data.note||'作品元数据来自晋江公开页面。若站点限制自动读取，程序不会绕过登录、验证码或访问限制。')}</div></div>`;
+  <div class="library-section-title"><h3>${V.libQ?'搜索结果':(periodNames[V.jjPeriod]||'晋江榜单')+' · '+V.jjChannel}</h3><span>${data.count||0} 部作品</span></div><div class="bookshelf">${cards}</div><div class="note">${esc(data.note||'作品元数据来自晋江公开页面。若站点限制自动读取，程序不会绕过登录、验证码或访问限制。')}</div></div>`;
   $$('[data-source]').forEach(b=>b.onclick=()=>{V.libSource=b.dataset.source;V.libQ='';$('#q').value='';pLibrary()});
   $$('[data-jj-period]').forEach(b=>b.onclick=()=>{V.jjPeriod=b.dataset.jjPeriod;V.libQ='';$('#q').value='';pJjwxc()});
   $$('[data-jj-channel]').forEach(b=>b.onclick=()=>{V.jjChannel=b.dataset.jjChannel;V.libQ='';$('#q').value='';pJjwxc()});
@@ -477,16 +511,16 @@ function showJjwxcBook(b){
  m.querySelector('#jj-start').onclick=()=>api('jjwxc/select',{method:'POST',body:{title:b.title,author:b.author,characters:b.characters||[]}}).then(r=>{m.close();V.nid=r.novel_id;V.tab='cards';V.p='novels';toast('已开始检索 '+r.title+' 的人物资料');go('novels')}).catch(e=>toast(e.message));
 }
 function showBook(b){
- const m=modal('作品档案',`<div class="book-detail">${bookCover(b)}<div><div class="library-meta">${esc(b.region)} · ${esc(b.era)} · ${esc(b.genre)}</div><h2>${esc(b.title)}</h2><div class="note">${esc(b.author)}　·　${esc(b.rank)}</div><p>${esc(b.description)}</p><b>主要人物 / 主角候选</b><div class="character-pills">${(b.characters||[]).map(n=>`<span>${esc(n)}</span>`).join('')}</div><div class="note">选择后会以这些人物为检索线索，抓取公开网页资料并在本地生成身份卡。无需填写 API Key，不调用大模型生成。</div><div class="bar" style="margin-top:16px"><button class="btn p" id="book-start">为这本书生成身份卡</button><button class="btn" id="book-cancel">稍后再说</button></div></div></div>`,true);
+ const m=modal('作品档案',`<div class="book-detail">${bookCover(b)}<div><div class="library-meta">${esc(b.region)} · ${esc(b.era)} · ${esc(b.genre)}</div><h2>${esc(b.title)}</h2><div class="note">${esc(b.author)}　·　${esc(b.rank)}</div><p>${esc(b.description)}</p><b>主要人物 / 主角候选</b><div class="character-pills">${(b.characters||[]).map(n=>`<span>${esc(n)}</span>`).join('')}</div><div class="note">选择后会按这些人物检索公开资料，并写成身份卡。</div><div class="bar" style="margin-top:16px"><button class="btn p" id="book-start">为这本书生成身份卡</button><button class="btn" id="book-cancel">稍后再说</button></div></div></div>`,true);
  m.querySelector('#book-cancel').onclick=m.close;
  m.querySelector('#book-start').onclick=()=>api('catalog/select',{method:'POST',body:{book_id:b.id}}).then(r=>{m.close();V.nid=r.novel_id;V.tab='cards';V.p='novels';V.q='';$('#q').value='';toast('已开始检索 '+r.title+' 的人物资料');go('novels')}).catch(e=>toast(e.message));
 }
 /* ---------- 小说库 ---------- */
 function newNovel(){const m=modal('新建小说',`<label>书名 *</label><input type="text" id="n-t"><label>作者（填写后能区分同名的书）</label><input type="text" id="n-a"><label>版本 / 改编说明（可选）</label><input type="text" id="n-v" placeholder="如：原著小说 / 2019年电视剧版">
  <label>人物名单（可留空，系统会尝试从检索资料中自动识别；也可填写关键角色）</label><textarea id="n-c" style="min-height:56px"></textarea>
- <label>获取方式</label><label style="display:flex;gap:8px;color:var(--ink);margin:4px 0"><input type="radio" name="n-m" value="web" checked>免费检索公开资料（不调用付费搜索 API）</label><label style="display:flex;gap:8px;color:var(--ink);margin:4px 0"><input type="radio" name="n-m" value="manual">我自己写剧情（检索不到或不想联网时）</label><label style="display:flex;gap:8px;color:var(--ink);margin:4px 0"><input type="radio" name="n-m" value="both">两者结合</label>
+ <label>获取方式</label><label style="display:flex;gap:8px;color:var(--ink);margin:4px 0"><input type="radio" name="n-m" value="web" checked>检索公开资料</label><label style="display:flex;gap:8px;color:var(--ink);margin:4px 0"><input type="radio" name="n-m" value="manual">我自己写剧情（检索不到或不想联网时）</label><label style="display:flex;gap:8px;color:var(--ink);margin:4px 0"><input type="radio" name="n-m" value="both">两者结合</label>
  <div id="n-pw" style="display:none"><label>自设剧情 / 人物设定（至少 30 字；越具体，身份卡越准确）</label><textarea id="n-p" style="min-height:150px"></textarea></div>
- <div class="note">资料只用于整理人物身份卡。自动身份卡采用本地规则提取，不调用大模型 API；网页检索使用无需 Key 的公开搜索页面。</div>
+ <div class="note">这些资料只用来整理人物。没有出处的经历不会被写进身份卡。</div>
  <div class="bar" style="margin-top:10px"><button class="btn p" id="n-go">创建并开始</button><button class="btn" id="n-x">取消</button></div>`);
  const upd=()=>{m.querySelector('#n-pw').style.display=m.querySelector('input[name=n-m]:checked').value==='web'?'none':'block'};
  m.querySelectorAll('input[name=n-m]').forEach(r=>r.onchange=upd);m.querySelector('#n-x').onclick=m.close;
@@ -494,7 +528,7 @@ function newNovel(){const m=modal('新建小说',`<label>书名 *</label><input 
 function pNovels(){return api('novels').then(r=>{const L=r.novels.filter(n=>match(n.title,n.author,(n.characters||[]).join(' ')));if(!V.nid||!L.find(n=>n.novel_id===V.nid))V.nid=L.length?L[0].novel_id:null;
  const list=L.map(n=>`<button class="tile${n.novel_id===V.nid?' on':''}" data-id="${n.novel_id}" style="grid-template-columns:24px minmax(0,1fr) auto">${av(n.title)}<span class="t">${esc(n.title)}</span><small>${n.cards} 卡</small></button>`).join('')||'<div class="empty">还没有小说。点右上角“新建小说”。</div>';
  const left=`<div class="tiles"><button class="btn p" id="nn" style="height:38px">＋ 新建小说</button>${list}</div>`;
- if(!V.nid){$('#page').innerHTML=`<div class="wrap"><div class="cols">${left}<div class="card empty">在左侧新建一本小说：填写书名、作者和主角名单，选择“全网检索”或“自己写剧情”。<br>检索不到、版本不统一、站点不允许抓取时，都可以用“自己写剧情”，同样会生成身份卡。</div></div></div>`;$('#nn').onclick=newNovel;return}
+ if(!V.nid){$('#page').innerHTML=`<div class="wrap"><div class="cols">${left}<div class="card empty">左侧选一本小说，或新建一本。检索完成后，人物会出现在下面。</div></div></div>`;$('#nn').onclick=newNovel;return}
  return api('novel?id='+V.nid).then(n=>{const t=n.task,run=t&&t.state==='running';
  const modeTxt={web:'全网检索',manual:'自设剧情',both:'检索+自设'}[n.mode];
  let msg='';if(t){const cls=run?'':t.state==='done'?'ok':t.state==='needs_manual'?'w':'bad';
@@ -502,8 +536,7 @@ function pNovels(){return api('novels').then(r=>{const L=r.novels.filter(n=>matc
   ${t.state==='needs_manual'?'<div class="bar" style="margin-top:8px"><button class="btn p" id="tm">改为自己写剧情</button></div>':''}
   ${t.result&&t.result.can_reextract&&!run?'<div class="bar" style="margin-top:8px"><button class="btn p" id="rx">重新整理人物（不重新搜索）</button></div>':''}
   ${(t.result&&t.result.warnings||[]).map(w=>`<div class="li">⚠ ${esc(w)}</div>`).join('')}
-  ${t.result&&t.result.raw_samples&&Object.keys(t.result.raw_samples).length?`<details style="margin-top:8px"><summary class="note" style="cursor:pointer">模型原始输出（前 600 字，用于排查）</summary>${Object.entries(t.result.raw_samples).map(([k,v])=>`<div class="note"><b>${esc(k)}</b></div><pre>${esc(v||'（空）')}</pre>`).join('')}</details>`:''}
-  ${t.result&&t.result.engine_report&&Object.keys(t.result.engine_report).length?`<table style="margin-top:8px"><tr><th>搜索源</th><th>查询次数</th><th>结果数</th><th>问题</th></tr>${Object.entries(t.result.engine_report).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.queries}</td><td>${v.results}</td><td title="${esc(v.error||'')}">${esc(v.error||'—')}</td></tr>`).join('')}</table>`:''}</div>`}
+  </div>`}
  const cards=n.cards.map(c=>`<button class="tile" data-c="${c.character_id}" style="grid-template-columns:24px minmax(0,1fr) auto">${av(c.name)}<span class="t">${esc(c.name)}</span>${stag(c.status)}</button>`).join('')||'<div class="empty">还没有身份卡。</div>';
  const src=n.sources.map(s=>{const st=s.status||'',c=st.indexOf('used')===0?(st.indexOf('+unverified')>0?'in':'ok'):st.indexOf('blocked')===0?'bad':'w';return `<tr><td>${esc(s.source_id)}</td><td title="${esc(s.name+' '+s.url)}">${esc(s.name||dom(s.url))}<div class="s">${esc(dom(s.url))}</div></td><td>${esc({encyclopedia:'百科',platform:'平台',review:'书评',community:'社区',other:'网页',user:'自设'}[s.kind]||s.kind)}${s.edition==='adaptation'?' · 改编':''}</td><td><span class="tg ${c}" title="${esc(st)}">${esc(st.indexOf('used')===0?((st.indexOf('used_snippet')===0?'仅摘要':'已采用')+(st.indexOf('+unverified')>0?'·作者未核实':'')):st.replace(/^(blocked|skipped):/,''))}</span></td><td title="${esc(s.excerpt)}">${esc(s.excerpt)}</td></tr>`}).join('');
  $('#page').innerHTML=`<div class="wrap"><div class="cols">${left}<div style="display:flex;flex-direction:column;gap:14px;min-width:0"><div class="card"><div class="hd"><div><h2>${esc(n.title)}</h2><div class="chips" style="margin-top:6px"><span class="tg">${esc(n.author||'作者未填')}</span><span class="tg in">${modeTxt}</span>${n.version?`<span class="tg">${esc(n.version)}</span>`:''}${n.characters.map(c=>`<span class="tg">${esc(c)}</span>`).join('')}</div></div><div class="bar"><button class="btn" id="rs"${run?' disabled':''}>重新检索</button><button class="btn" id="ap">补充自设剧情</button><button class="btn d" id="dn">删除</button></div></div></div>${msg}
@@ -523,39 +556,44 @@ const band=n=>`background:linear-gradient(135deg,${hue(n)} 0%,${hue(n)}88 100%)`
 function newCard(){const m=modal('检索并生成身份卡',`<label>书名 *</label><input type="text" id="c-book" placeholder="例如：红楼梦"><label>角色名 *</label><input type="text" id="c-n" placeholder="例如：林黛玉"><label>作者（可选，用来区分同名的书）</label><input type="text" id="c-a"><div class="note">会先用百度、夸克、搜狗、必应等做完整检索，再整理外貌、性格、经历、关系和原话。资料不够时不会保存空卡，而是告诉你找到了什么。</div><div class="bar" style="margin-top:10px"><button class="btn p" id="c-go">开始全网检索</button><button class="btn" id="c-x">取消</button></div>`);m.querySelector('#c-x').onclick=m.close;m.querySelector('#c-go').onclick=()=>{const title=m.querySelector('#c-book').value.trim(), name=m.querySelector('#c-n').value.trim(), author=m.querySelector('#c-a').value.trim(); if(!title||!name){toast('请同时填写书名和角色名');return} api('novels',{method:'POST',body:{title:title,author:author,characters:name,mode:'web'}}).then(n=>api('novels/start',{method:'POST',body:{novel_id:n.novel_id}})).then(()=>{m.close();V.nid=null;toast('已开始全网检索：'+name);go('novels')}).catch(e=>toast(e.message))}}
 
 function pCards(){if(V.cid)return cardDetail();
- return Promise.all([api('characters'),api('pending_bind')]).then(([r,pb])=>{const gal=r.characters.filter(c=>match(c.name,c.identity,c.novel,c.tags.join(' '))).map(c=>`<button class="idc" data-c="${c.character_id}"><div class="band" style="${band(c.name)}"><span class="plb2">${PLUMB(30)}</span>${av(c.name)}</div><div class="bd"><div class="nm">${esc(nm(c.name))}</div><div class="id2">${esc(c.identity||'（尚无身份描述）')}</div><div class="tags">${c.tags.map(t=>`<span class="trait">${esc(t)}</span>`).join('')}</div></div><div class="ft">${stag(c.status)}<span class="s">${esc(c.novel||'')}</span></div></button>`).join('')||'<div class="card empty">还没有身份卡。到“小说库”检索一本小说，或点“新建自设角色”。</div>';
+ return Promise.all([api('characters'),api('pending_bind')]).then(([r,pb])=>{const gal=r.characters.filter(c=>match(c.name,c.identity,c.novel,c.tags.join(' '))).map(c=>`<button class="idc" data-c="${c.character_id}"><div class="band" style="${band(c.name)}">${av(c.name)}</div><div class="bd"><div class="nm">${esc(nm(c.name))}</div><div class="id2">${esc(c.identity||'（尚无身份描述）')}</div><div class="tags">${c.tags.map(t=>`<span class="trait">${esc(t)}</span>`).join('')}</div></div><div class="ft">${stag(c.status)}<span class="s">${esc(c.novel||'')}</span></div></button>`).join('')||'<div class="card empty">还没有身份卡。到“小说库”检索一本小说，或点“新建自设角色”。</div>';
  $('#page').innerHTML=`<div class="wrap"><div class="hd"><div class="note" style="margin:0">共 ${r.characters.length} 张。只有“已确认 / 自设 / 测试”的卡才能绑定到小人。</div><button class="btn p" id="nc">＋ 新建自设角色</button></div>
  ${pb&&pb.character_id?`<div class="card" style="background:#fff8dc;border-color:#efe3a0"><div class="hd"><div>待绑定：<b>${esc(pb.name)}</b>。回到游戏，点要扮演它的小人 →“NovelSims：菜单…”→“绑定为后端待绑定角色”（也可以直接在菜单里选角色）。</div><button class="btn s" id="pc">取消待绑定</button></div></div>`:''}<div class="gal">${gal}</div></div>`;
  $('#nc').onclick=newCard;if($('#pc'))$('#pc').onclick=()=>api('pending_bind',{method:'DELETE'}).then(load);$$('.idc').forEach(b=>b.onclick=()=>{V.cid=b.dataset.c;V.edit=false;load()})})}
 function cardDetail(){return api('character?id='+V.cid).then(c=>{const ss=c.speech_style||{},tl=c.timeline||{},stg=tl.stages||{},ok=['confirmed','user_defined','fixture'].includes(c.verification_status);
  const li=(a,f)=>(a&&a.length)?a.map(x=>`<div class="li">${f?f(x):esc(x)}</div>`).join(''):'<div class="s">（空）</div>';
  const chips=a=>(a&&a.length)?`<div class="chips">${a.map(x=>`<span class="tg">${esc(x)}</span>`).join('')}</div>`:'<div class="s">（空）</div>';
- const cite=s=>(s||[]).length?` <span class="tg in">${esc(s.join(' '))}</span>`:'';
+ const cite=()=>'';
  const head=`<div class="hd"><button class="btn s" id="bk">← 返回</button><div class="bar">${V.edit?'<button class="btn p" id="sv2">保存</button><button class="btn" id="ce">取消</button>':`<button class="btn" id="ed">编辑</button>${c.verification_status==='confirmed'?'<button class="btn" id="un">取消确认</button>':'<button class="btn" id="cf">确认（已校对）</button>'}<button class="btn p" id="bd"${ok?'':' disabled title="请先确认这张卡"'}>设为待绑定</button><button class="btn d" id="dl">删除</button>`}</div></div>`;
- const left=`<div class="idl"><div class="band" style="${band(c.name)}"><span class="plb2">${PLUMB(44)}</span>${av(c.name)}</div><div class="in"><h2>${esc(nm(c.name))}</h2>${(c.alias||[]).length?`<div class="s">别名：${esc(c.alias.join('、'))}</div>`:''}<div>${esc(c.identity||'（尚无身份描述）')}</div><div class="chips">${stag(c.verification_status)}${c.low_data?'<span class="tg bad">资料不足</span>':''}${c.origin?`<span class="tg">${{web:'网络资料',user_text:'自设剧情',mixed:'资料+自设',user_defined:'手动创建'}[c.origin]||esc(c.origin)}</span>`:''}</div>
-  <div class="kv" style="padding:0"><span>小说</span><b style="max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.source_novel||'—')}</b></div><div class="kv" style="padding:0"><span>阶段</span><b>${esc(tl.current_stage||'—')}</b></div><div class="kv"><span>人物关系</span><b>${(c.relationships||[]).length} 条</b></div><div class="kv"><span>固定记忆</span><b>${(c.canon_memories||[]).length} 条</b></div><div class="kv"><span>资料来源</span><b>${(c.info_sources||[]).length} 个</b></div>${c.extraction_method==='deterministic_no_ai'?'<span class="tg ok">本地规则生成 · 无 AI API</span>':''}<div class="mono">${esc(c.character_id)}</div>
-  ${(c.missing_fields||[]).length?`<div><div class="s" style="margin-bottom:4px">信息缺口（不会被编造）</div>${chips(c.missing_fields)}</div>`:''}</div></div>`;
- if(V.edit){$('#page').innerHTML=`<div class="wrap">${head}<div class="idd">${left}<div class="card"><label style="margin-top:0">身份</label><input type="text" id="e-identity" value="${esc(c.identity)}"><label>背景</label><textarea id="e-background">${esc(c.background)}</textarea><div class="g2"><div><label>人生愿望（核心动机）</label><input type="text" id="e-core_motivation" value="${esc(c.core_motivation)}"></div><div><label>核心创伤</label><input type="text" id="e-core_trauma" value="${esc(c.core_trauma)}"></div></div>
+ const feminine=/[她女后妃公主小姐娘妇妻妾姨姑嫂]|[玉娜丽儿琴芳英兰梅珍黛钗凤春雪月花燕蓉嫣薇婷琳瑶菲妮莎娅姬]$/;
+ const bust=f=>`<svg viewBox="0 0 140 180" aria-hidden="true"><ellipse cx="70" cy="168" rx="46" ry="10" fill="#c4b29a"/><path d="M38 150c6-28 18-40 32-40s26 12 32 40" fill="#efe6d8" stroke="#5A1A1A" stroke-width="1.4"/><path d="M48 118c2 18 10 28 22 28s20-10 22-28" fill="#5A1A1A" opacity=".15"/><circle cx="70" cy="62" r="26" fill="#f3eadf" stroke="#5A1A1A" stroke-width="1.6"/><path d="M46 58c4-24 44-24 48 2-8-16-40-16-48-2z" fill="${f?'#3a1212':'#2c211c'}"/><path d="M58 66c2 2 4 2 6 0M76 66c2 2 4 2 6 0" fill="none" stroke="#5A1A1A" stroke-width="1.2"/><path d="M66 78c3 3 8 3 10 0" fill="none" stroke="#5A1A1A"/></svg>`;
+ const stageName={original_early:'早年',original_mid:'中段',original_late:'后期',original_ending:'结局',extra:'其后'};
+ const events=[];
+ ['original_early','original_mid','original_late','original_ending','extra'].forEach(k=>{if(stg[k]&&stg[k].state)events.push({when:stageName[k]||'经历',text:stg[k].state})});
+ (c.canon_memories||[]).forEach(m=>{if(m&&m.content)events.push({when:'经历',text:m.content})});
+ const life=events.length?`<div class="life"><h3>生平事迹</h3><ol>${events.map(e=>`<li><b>${esc(e.when)}</b><span>${esc(e.text)}</span></li>`).join('')}</ol></div>`:`<div class="life"><h3>生平事迹</h3><p class="note">目前记下的经历还不多。已有的早年、中段和结局会按时间排在这里。</p></div>`;
+ const left=`<div class="idl"><div class="portrait-lg">${bust(feminine.test((c.name||'')+(c.identity||'')))}</div><div class="in"><h2>${esc(nm(c.name))}</h2>${(c.alias||[]).length?`<div class="note">又名 ${esc(c.alias.join('、'))}</div>`:''}<p class="prose">${esc(c.identity||'身份还在整理。')}</p><div class="chips">${stag(c.verification_status)}${c.low_data?'<span class="tg w">待补充</span>':''}</div><div class="note">${esc(c.source_novel||'')}</div></div></div>`;
+if(V.edit){$('#page').innerHTML=`<div class="wrap">${head}<div class="idd">${left}<div class="card"><label style="margin-top:0">身份</label><input type="text" id="e-identity" value="${esc(c.identity)}"><label>背景</label><textarea id="e-background">${esc(c.background)}</textarea><div class="g2"><div><label>人生愿望（核心动机）</label><input type="text" id="e-core_motivation" value="${esc(c.core_motivation)}"></div><div><label>核心创伤</label><input type="text" id="e-core_trauma" value="${esc(c.core_trauma)}"></div></div>
   <div class="g2"><div><label>核心特质（每行一条）</label><textarea id="e-core_personality">${esc(lines(c.core_personality))}</textarea></div><div><label>可变特质（每行一条）</label><textarea id="e-variable_personality">${esc(lines(c.variable_personality))}</textarea></div></div>
   <div class="g2"><div><label>说话风格</label><textarea id="e-ss">${esc(ss.summary||'')}</textarea></div><div><label>称呼习惯</label><textarea id="e-addr">${esc(ss.address||'')}</textarea></div></div><label>口头禅 / 典型台词（每行一句，最多 5 句）</label><textarea id="e-phr">${esc(lines(ss.sample_phrases))}</textarea>
   <div class="g2"><div><label>行为倾向（每行一条）</label><textarea id="e-behavioral_tendencies">${esc(lines(c.behavioral_tendencies))}</textarea></div><div><label>别名（每行一个）</label><textarea id="e-alias">${esc(lines(c.alias))}</textarea></div></div>
   <div class="g2"><div><label>核心规则（不应违背）</label><textarea id="e-core_rules">${esc(lines(c.core_rules))}</textarea></div><div><label>禁止行为</label><textarea id="e-forbidden_behaviors">${esc(lines(c.forbidden_behaviors))}</textarea></div></div>
   <label>人物关系（每行：名字｜关系｜阶段）</label><textarea id="e-rel">${esc((c.relationships||[]).map(r=>[r.name,r.relation,r.stage].join('｜')).join('\n'))}</textarea>
   <label>固定记忆（每行：重要度1-10｜内容；AI 不能修改它们）</label><textarea id="e-mem" style="min-height:110px">${esc((c.canon_memories||[]).map(m=>m.importance+'｜'+m.content).join('\n'))}</textarea>
-  <label>当前时间阶段</label><select id="e-stage" style="padding:8px;border:1px solid var(--line);border-radius:10px"><option value="">（无）</option>${Object.keys(stg).map(k=>`<option value="${k}"${tl.current_stage===k?' selected':''}>${k}</option>`).join('')}</select></div></div></div>`;
+  <label>当前时间阶段</label><select id="e-stage" style="padding:8px;border:1px solid var(--line);border-radius:10px"><option value="">（无）</option>${Object.keys(stg).map(k=>`<option value="${k}"${tl.current_stage===k?' selected':''}>${stageName[k]||'经历'}</option>`).join('')}</select></div></div></div>`;
   $('#bk').onclick=()=>{V.cid=null;V.edit=false;load()};$('#ce').onclick=()=>{V.edit=false;load()};
   $('#sv2').onclick=()=>{const g=i=>$('#e-'+i).value,L=i=>unl(g(i));const patch={identity:g('identity'),background:g('background'),core_motivation:g('core_motivation'),core_trauma:g('core_trauma'),core_personality:L('core_personality'),variable_personality:L('variable_personality'),behavioral_tendencies:L('behavioral_tendencies'),alias:L('alias'),core_rules:L('core_rules'),forbidden_behaviors:L('forbidden_behaviors'),speech_style:{summary:g('ss'),address:g('addr'),sample_phrases:L('phr')},
    relationships:L('rel').map(x=>{const p=x.split(/[｜|]/).map(s=>s.trim());return{name:p[0],relation:p[1]||'',stage:p[2]||''}}),canon_memories:L('mem').map(x=>{const p=x.split(/[｜|]/);return p.length>1&&/^\d+$/.test(p[0].trim())?{importance:+p[0],content:p.slice(1).join('｜').trim()}:{importance:5,content:x}}),timeline:{current_stage:g('stage')||null}};
    api('card',{method:'PUT',body:{character_id:c.character_id,patch}}).then(()=>{V.edit=false;toast('已保存');load()}).catch(e=>toast(e.message))};return}
- $('#page').innerHTML=`<div class="wrap">${head}<div class="idd">${left}<div class="secs">
-  <div class="card"><h3>特质</h3><div class="s" style="margin-bottom:4px">核心特质（不轻易改变）</div>${chips(c.core_personality)}<div class="s" style="margin:10px 0 4px">可变特质</div>${chips(c.variable_personality)}</div>
-  <div class="card"><h3>说话风格</h3><div>${esc(ss.summary||'（空）')}</div>${ss.address?`<div class="s" style="margin-top:6px">称呼：${esc(ss.address)}</div>`:''}<div style="margin-top:8px">${li(ss.sample_phrases,x=>'“'+esc(x)+'”')}</div></div>
-  <div class="card full"><h3>背景</h3><div>${esc(c.background||'（空）')}</div></div>
+ $('#page').innerHTML=`<div class="wrap dossier">${head}<div class="idd">${left}<div class="secs">
+  <div class="card"><h3>性格</h3><div class="prose">${(c.core_personality||[]).join(' · ')||'性格还在从公开资料里整理。'}</div>${(c.variable_personality||[]).length?`<div class="note" style="margin-top:8px">也会表现出 ${esc((c.variable_personality||[]).join('、'))}</div>`:''}</div>
+  <div class="card"><h3>说话</h3><div class="prose">${esc(ss.summary||'说话的习惯还没写下来。')}</div>${ss.address?`<div class="note" style="margin-top:6px">怎么称呼人：${esc(ss.address)}</div>`:''}<div style="margin-top:8px">${li(ss.sample_phrases,x=>'“'+esc(x)+'”')}</div></div>
+  ${life}
+  <div class="card full"><h3>身世</h3><div class="prose">${esc(c.background||'身世还在整理。')}</div></div>
   <div class="card"><h3>人生愿望与创伤</h3><div class="li"><span class="s">愿望</span> ${esc(c.core_motivation||'（空）')}</div><div class="li"><span class="s">创伤</span> ${esc(c.core_trauma||'（空）')}</div><h3 style="margin-top:10px">行为倾向</h3>${li(c.behavioral_tendencies)}</div>
   <div class="card"><h3>核心规则</h3>${li(c.core_rules)}<h3 style="margin-top:10px">禁止行为</h3>${li(c.forbidden_behaviors)}</div>
   <div class="card"><h3>人物关系</h3>${li(c.relationships,r=>`<b>${esc(r.name)}</b> · ${esc(r.relation)}${r.stage?' · '+esc(r.stage):''}${cite(r.sources)}`)}</div>
-  <div class="card"><h3>时间线</h3>${Object.keys(stg).length?Object.entries(stg).map(([k,s])=>`<div class="li"><span class="tg${k===tl.current_stage?' ok':''}">${esc(k)}</span> ${esc(s.state)}${s.goal?' · 目标：'+esc(s.goal):''}${cite(s.sources)}</div>`).join(''):'<div class="s">（空）</div>'}</div>
-  <div class="card full"><h3>固定记忆（锁定，AI 不能修改）</h3>${li(c.canon_memories,m=>`<span class="tg">${m.importance}</span> ${esc(m.content)}${cite(m.sources)}`)}</div>
+  <div class="card full"><h3>记得的事</h3>${(c.canon_memories||[]).length? (c.canon_memories||[]).map(m=>`<div class="li">${esc(m.content)}</div>`).join('') : '<div class="note">还没有单独记下的往事。</div>'}</div>
   ${(c.conflicts||[]).length?`<div class="card full"><h3>资料冲突（已并列保留，请你判断）</h3>${c.conflicts.map(x=>`<div class="li"><b>${esc(x.field)}</b>${x.candidates.map(k=>`<div>· ${esc(k.claim)}${cite(k.sources)}</div>`).join('')}</div>`).join('')}</div>`:''}
   <div class="card full"><h3>资料来源</h3>${li(c.info_sources,s=>`<span class="tg in">${esc(s.id)}</span> ${esc(s.name||dom(s.url))} <span class="s">${esc(dom(s.url))}${s.edition==='adaptation'?' · 改编版':''}</span>`)}</div></div></div></div>`;
  $('#bk').onclick=()=>{V.cid=null;load()};$('#ed').onclick=()=>{V.edit=true;clearInterval(timer);load()};

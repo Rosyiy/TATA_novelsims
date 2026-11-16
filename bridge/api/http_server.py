@@ -1,6 +1,8 @@
 """HTTP front-end (stdlib). Bound to 127.0.0.1 by default."""
 import json
 import logging
+import socket
+import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -83,9 +85,18 @@ def make_handler(router, get_html=None):
     return Handler
 
 
+class _ExclusiveHTTPServer(ThreadingHTTPServer):
+    allow_reuse_address = False
+
+    def server_bind(self):
+        if sys.platform == "win32" and hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+
 def start_http(router, host, port, get_html=None):
     handler = make_handler(router, get_html)
-    server = ThreadingHTTPServer((host, port), handler)
+    server = _ExclusiveHTTPServer((host, port), handler)
     real = server.server_address[1]
     handler.allowed_hosts = {"127.0.0.1:%d" % real, "localhost:%d" % real, "[::1]:%d" % real}
     handler.allowed_origins = {"http://127.0.0.1:%d" % real, "http://localhost:%d" % real}
