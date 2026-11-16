@@ -3,7 +3,9 @@
 
 The app logic is unchanged: this only wraps bridge.main.main([]) so that a failed
 start never ends silently. Any exception or non-zero exit code is written to
-%LOCALAPPDATA%\\NovelSims\\startup_error.log and shown in a Windows message box.
+startup_error.log under the data directory (beside the exe when portable.flag
+or a data folder is present, otherwise %LOCALAPPDATA%\\NovelSims) and shown in
+a Windows message box.
 NovelSims_debug.exe (console build) additionally prints everything to the console
 and waits for Enter before closing.
 """
@@ -34,7 +36,26 @@ WEBVIEW2_MISSING = (
 )
 
 
+def _apply_portable_data_dir():
+    """Point NOVELSIMS_DIR at <exe>\\data when this frozen copy is portable.
+
+    bridge.config.default_data_dir reads the same marker. Setting the variable
+    here also covers startup_error.log and native_crash.log, and the watchdog
+    child inherits it.
+    """
+    if os.environ.get("NOVELSIMS_DIR"):
+        return
+    try:
+        from bridge.config import portable_data_dir
+        path = portable_data_dir()
+    except Exception:
+        return
+    if path:
+        os.environ["NOVELSIMS_DIR"] = path
+
+
 def _data_dir():
+    _apply_portable_data_dir()
     env = os.environ.get("NOVELSIMS_DIR")
     if env:
         return env
@@ -218,6 +239,7 @@ def _native_crash_detail(rc):
 
 def main():
     multiprocessing.freeze_support()
+    _apply_portable_data_dir()
     if os.environ.get("NOVELSIMS_CHILD") == "1" or not getattr(sys, "frozen", False):
         return _run_app()
     # Watchdog parent: run the app in a child process so that even a native crash

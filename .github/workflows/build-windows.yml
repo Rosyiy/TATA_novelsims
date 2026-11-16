@@ -152,7 +152,12 @@ jobs:
             if (Test-Path $log) { Remove-Item $log -Force }
           }
 
-          Write-Host "Starting $exe"
+          # Simulate an install off C:: portable.flag must send logs and the
+          # database to <exe>\data instead of %LOCALAPPDATA%\NovelSims.
+          $portableFlag = Join-Path $work "portable.flag"
+          $portableData = Join-Path $work "data"
+          Set-Content -Path $portableFlag -Value "portable" -Encoding ascii
+          Write-Host "Starting $exe (portable data dir $portableData)"
           $proc = Start-Process -FilePath $exe -WorkingDirectory $work -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
           Write-Host "parent pid=$($proc.Id)"
           Start-Sleep -Seconds 15
@@ -197,6 +202,9 @@ jobs:
           Show-TextFile "bridge.log" (Join-Path $env:LOCALAPPDATA "NovelSims\bridge.log")
           Show-TextFile "TEMP startup_error.log" (Join-Path $env:TEMP "NovelSims_startup_error.log")
           Show-TextFile "exe-dir startup_error.log" (Join-Path $work "startup_error.log")
+          Show-TextFile "portable startup_error.log" (Join-Path $portableData "startup_error.log")
+          Show-TextFile "portable native_crash.log" (Join-Path $portableData "native_crash.log")
+          Show-TextFile "portable bridge.log" (Join-Path $portableData "bridge.log")
 
           Write-Host "Stopping NovelSims processes"
           cmd /c "taskkill /F /T /PID $($proc.Id) >NUL 2>NUL"
@@ -208,17 +216,25 @@ jobs:
           Start-Sleep -Seconds 1
 
           $errLog = Join-Path $env:LOCALAPPDATA "NovelSims\startup_error.log"
+          $portableErr = Join-Path $portableData "startup_error.log"
+          $portableBridge = Join-Path $portableData "bridge.log"
           $failed = $false
           if (-not $alive) {
             Write-Host "SMOKE FAIL: NovelSims_debug.exe was not running after 15s"
             $failed = $true
           }
-          if (Test-Path $errLog) {
+          if ((Test-Path $errLog) -or (Test-Path $portableErr)) {
             Write-Host "SMOKE FAIL: startup_error.log was written during startup"
             $failed = $true
           }
+          if (-not (Test-Path $portableBridge)) {
+            Write-Host "SMOKE FAIL: portable data dir was not used ($portableBridge)"
+            $failed = $true
+          }
+          Remove-Item $portableFlag -Force -ErrorAction SilentlyContinue
+          Remove-Item $portableData -Recurse -Force -ErrorAction SilentlyContinue
           if ($failed) { exit 1 }
-          Write-Host "SMOKE PASS: NovelSims_debug.exe still running after 15s and no startup_error.log"
+          Write-Host "SMOKE PASS: NovelSims_debug.exe still running after 15s, data in $portableData, no startup_error.log"
           exit 0
 
       - name: Upload onefile
@@ -260,7 +276,9 @@ jobs:
             "- NovelSims_Setup_$version.exe: installer. Installs the app (including NovelSims_debug.exe) and copies the Sims 4 mod to Documents\Electronic Arts\The Sims 4\Mods\NovelSims.",
             "- NovelSims-portable.zip: folder build. Contains NovelSims.exe and NovelSims_debug.exe sharing _internal.",
             "",
-            "If the window does not open, run NovelSims_debug.exe. The error is written to %LOCALAPPDATA%\NovelSims\startup_error.log.",
+            "The installer lets you choose a folder. If D: is a writable fixed drive, the default is D:\NovelSims. Installing off C: stores logs, the database and cache in that folder's data directory. The Sims 4 mod files still go to Documents.",
+            "The single-file NovelSims.exe still unpacks its runtime cache to %LOCALAPPDATA%\NovelSims\_runtime. PyInstaller resolves a relative runtime_tmpdir against the working directory, not the exe folder, and cannot fall back if that folder is not writable.",
+            "If the window does not open, run NovelSims_debug.exe. The error is written to startup_error.log in the data directory.",
             "Microsoft Edge WebView2 Runtime is required: https://developer.microsoft.com/microsoft-edge/webview2/"
           ) | Set-Content -Encoding utf8 release_notes.txt
           gh release create $tag --title "NovelSims $tag" --notes-file release_notes.txt `

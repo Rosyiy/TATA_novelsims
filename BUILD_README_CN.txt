@@ -37,3 +37,6 @@ NovelSims Windows 单文件桌面版构建包（0.3.1）
 
 
 0.3.5：新增百度、夸克、搜狗搜索源；人物检索扩展为最多 18 条查询并行搜索，读取网页上限最高 30。
+
+0.3.7：安装程序可以选择目录。若存在可写的固定磁盘 D:，默认安装到 D:\NovelSims，否则仍为 %LOCALAPPDATA%\Programs\NovelSims。安装到 C: 以外时会写入 portable.flag，日志、数据库和缓存改到安装目录下的 data（游戏模组仍复制到「文档\Electronic Arts\The Sims 4\Mods\NovelSims」）。
+单文件 NovelSims.exe 的解压目录仍是 %LOCALAPPDATA%\NovelSims\_runtime。PyInstaller 6.16 会把相对的 runtime_tmpdir 按「当前工作目录」解析，而不是 exe 所在目录，并且目录创建失败时不会自动改到另一个位置，所以不能安全地写成「能写就解压到 exe 旁边，否则再用 LocalAppData」。C: 空间不足时请使用安装包或便携目录版，安装到其他盘。

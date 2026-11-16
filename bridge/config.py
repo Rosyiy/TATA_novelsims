@@ -2,13 +2,35 @@
 import argparse
 import json
 import os
+import sys
 from dataclasses import dataclass, field, fields
+
+
+def portable_data_dir():
+    """Data directory beside a frozen exe when the install is marked portable.
+
+    A file named portable.flag, or an existing data directory, next to the
+    executable selects <exe dir>\\data. That keeps logs, the database and
+    caches off the system drive when the program itself is installed elsewhere.
+    Development runs (not frozen) stay on the default per-user directory.
+    """
+    if not getattr(sys, "frozen", False):
+        return None
+    folder = os.path.dirname(os.path.abspath(sys.executable))
+    flag = os.path.join(folder, "portable.flag")
+    data = os.path.join(folder, "data")
+    if os.path.isfile(flag) or os.path.isdir(data):
+        return data
+    return None
 
 
 def default_data_dir():
     env = os.environ.get("NOVELSIMS_DIR")
     if env:
         return env
+    portable = portable_data_dir()
+    if portable:
+        return portable
     # Use a simpler, more reliable location to avoid Documents permission issues
     base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
     return os.path.join(base, "NovelSims")

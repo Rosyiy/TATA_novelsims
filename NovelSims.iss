@@ -1,7 +1,7 @@
 ﻿; NovelSims 一键安装程序 (Inno Setup 6)
 #define MyAppName "NovelSims"
 #ifndef MyAppVersion
-#define MyAppVersion "0.3.6"
+#define MyAppVersion "0.3.7"
 #endif
 #define MyAppExe "NovelSims.exe"
 #define SrcDir "dist\onedir\NovelSims"
@@ -12,13 +12,14 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher=NovelSims
-DefaultDirName={localappdata}\Programs\NovelSims
+DefaultDirName={code:GetDefaultDir}
 DefaultGroupName=NovelSims
-DisableDirPage=yes
+DisableDirPage=no
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
 DisableWelcomePage=no
 PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=dist
@@ -59,8 +60,45 @@ Filename: "{sys}\taskkill.exe"; Parameters: "/f /im NovelSims_debug.exe"; Flags:
 [UninstallDelete]
 Type: dirifempty; Name: "{userdocs}\Electronic Arts\The Sims 4\Mods\NovelSims"
 Type: filesandordirs; Name: "{app}\_internal"
+Type: files; Name: "{app}\portable.flag"
 
 [Code]
+const
+  DRIVE_FIXED = 3;
+
+function GetDriveTypeW(lpRootPathName: String): Cardinal;
+  external 'GetDriveTypeW@kernel32.dll stdcall setuponly';
+
+var
+  ChosenDefaultDir: String;
+
+function DriveRootWritable(Root: String): Boolean;
+var
+  TempFile: String;
+begin
+  TempFile := Root + 'NovelSims.~tmp';
+  Result := SaveStringToFile(TempFile, 'ok', False);
+  if Result then
+    DeleteFile(TempFile);
+end;
+
+function GetDefaultDir(Param: String): String;
+var
+  Root: String;
+begin
+  if ChosenDefaultDir <> '' then
+  begin
+    Result := ChosenDefaultDir;
+    exit;
+  end;
+  Root := 'D:\';
+  if DirExists(Root) and (GetDriveTypeW(Root) = DRIVE_FIXED) and DriveRootWritable(Root) then
+    Result := 'D:\NovelSims'
+  else
+    Result := ExpandConstant('{localappdata}\Programs\NovelSims');
+  ChosenDefaultDir := Result;
+end;
+
 function WebView2Installed(): Boolean;
 var v: String;
 begin
@@ -84,9 +122,20 @@ begin
       msg := msg + '提示：未检测到《模拟人生4》的设置文件。请确认游戏至少运行过一次，并在游戏「选项 → 游戏选项 → 其他」中勾选「启用自定义内容和模组」和「允许脚本模组」。' + #13#10 + #13#10;
     if not WebView2Installed() then
       msg := msg + '注意：未检测到 Microsoft Edge WebView2 运行库，NovelSims 窗口可能无法显示。请从微软官网下载安装「WebView2 Runtime」：https://developer.microsoft.com/microsoft-edge/webview2/' + #13#10 + #13#10;
-    msg := msg + '建议玩游戏时先打开 NovelSims（桌面图标），再启动游戏。';
+    if CompareText(ExtractFileDrive(ExpandConstant('{app}')), 'C:') <> 0 then
+      msg := msg + '程序数据、日志和缓存保存在安装目录的 data 文件夹，不写入 C: 盘。' + #13#10 + #13#10
+    else
+      msg := msg + '程序数据、日志和缓存保存在 %LOCALAPPDATA%\NovelSims。' + #13#10 + #13#10;
+    msg := msg + '游戏模组仍在「文档」里，这是游戏要求的位置。建议玩游戏时先打开 NovelSims（桌面图标），再启动游戏。';
     WizardForm.FinishedLabel.Caption := msg;
     WizardForm.FinishedLabel.AutoSize := False;
-    WizardForm.FinishedLabel.Height := ScaleY(200);
+    WizardForm.FinishedLabel.Height := ScaleY(240);
   end;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  // Off C:, keep runtime data next to the program. Sims 4 mods stay in Documents.
+  if (CurStep = ssPostInstall) and (CompareText(ExtractFileDrive(ExpandConstant('{app}')), 'C:') <> 0) then
+    SaveStringToFile(ExpandConstant('{app}\portable.flag'), 'portable', False);
 end;

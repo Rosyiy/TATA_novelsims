@@ -55,7 +55,17 @@ exe = EXE(
     strip=False,
     upx=False,
     upx_exclude=[],
-    # Extract to a stable per-user folder instead of %TEMP% (temp cleaners / AV rules on %TEMP% commonly break extraction).
+    # Onefile extraction directory.
+    # PyInstaller 6.16 expands %ENV% on Windows, then resolves a relative
+    # runtime_tmpdir with _wfullpath against the process working directory,
+    # not the directory that contains the exe. "." is therefore not "<exe dir>".
+    # The bootloader also has no "try this folder, else another" fallback: if
+    # the chosen directory cannot be created, extraction fails and the exe
+    # does not start. Keep the cache under %LOCALAPPDATA%\NovelSims\_runtime
+    # (stable, per-user, not %TEMP%). To keep the program off a full C: drive,
+    # use the installer or the portable folder and install it on another drive;
+    # that build does not unpack a onefile cache. A portable.flag (or a data
+    # folder) next to the exe still stores logs and the database in <exe>\data.
     runtime_tmpdir=r"%LOCALAPPDATA%\NovelSims\_runtime",
     console=False,
     disable_windowed_traceback=False,
