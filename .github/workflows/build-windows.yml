@@ -1,0 +1,265 @@
+name: Build NovelSims Windows
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          architecture: x64
+          cache: pip
+          cache-dependency-path: requirements-build.txt
+
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-build.txt
+          python -m pip check
+          python -c "import PyInstaller, webview, clr; print('pyinstaller', PyInstaller.__version__)"
+
+      - name: Read version
+        id: version
+        shell: pwsh
+        run: |
+          $version = (Get-Content -Raw -Path BUILD_VERSION.txt).Trim()
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Unexpected BUILD_VERSION.txt: $version" }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "APP_VERSION=$version" >> $env:GITHUB_ENV
+          Write-Host "APP_VERSION=$version"
+
+      - name: Build onefile NovelSims.exe
+        run: python -m PyInstaller --noconfirm --clean --distpath dist/onefile --workpath build/onefile NovelSims_onefile.spec
+
+      - name: Build onedir with NovelSims.exe and NovelSims_debug.exe
+        run: python -m PyInstaller --noconfirm --clean --distpath dist/onedir --workpath build/onedir NovelSims_debug.spec
+
+      - name: Verify build outputs
+        shell: pwsh
+        run: |
+          $paths = @(
+            "dist\onefile\NovelSims.exe",
+            "dist\onedir\NovelSims\NovelSims.exe",
+            "dist\onedir\NovelSims\NovelSims_debug.exe",
+            "dist\onedir\NovelSims\_internal"
+          )
+          foreach ($path in $paths) {
+            if (-not (Test-Path $path)) { throw "Missing build output: $path" }
+            Write-Host "ok $path"
+          }
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          choco install innosetup --yes --no-progress
+          if ($LASTEXITCODE -eq 3010) { Write-Host "choco requested reboot (3010); continuing"; exit 0 }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build NovelSims_Setup installer
+        shell: pwsh
+        run: |
+          $candidates = @(
+            "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+            "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+          )
+          $iscc = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $iscc) {
+            $cmd = Get-Command ISCC.exe -ErrorAction SilentlyContinue
+            if ($cmd) { $iscc = $cmd.Source }
+          }
+          if (-not $iscc) { throw "ISCC.exe not found" }
+          Write-Host "Using $iscc"
+          & $iscc "/DMyAppVersion=$env:APP_VERSION" ".\NovelSims.iss"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $setup = "dist\NovelSims_Setup_$env:APP_VERSION.exe"
+          if (-not (Test-Path $setup)) { throw "Installer was not created: $setup" }
+          Get-Item $setup | Format-List FullName, Length
+
+      - name: Package portable zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist\onedir\NovelSims" -DestinationPath "dist\NovelSims-portable.zip" -Force
+          Get-Item "dist\onefile\NovelSims.exe", "dist\NovelSims_Setup_$env:APP_VERSION.exe", "dist\NovelSims-portable.zip" |
+            Select-Object Name, Length, FullName | Format-List
+
+      - name: Ensure WebView2 Runtime
+        shell: pwsh
+        run: |
+          $guid = "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+          $keys = @(
+            "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\$guid",
+            "HKLM:\SOFTWARE\Microsoft\EdgeUpdate\Clients\$guid",
+            "HKCU:\Software\Microsoft\EdgeUpdate\Clients\$guid"
+          )
+          $found = $false
+          foreach ($key in $keys) {
+            if (Test-Path $key) {
+              $pv = (Get-ItemProperty -Path $key -ErrorAction SilentlyContinue).pv
+              if ($pv -and $pv -ne "0.0.0.0") {
+                Write-Host "WebView2 already installed: $pv ($key)"
+                $found = $true
+              }
+            }
+          }
+          if (-not $found) {
+            $installer = Join-Path $env:TEMP "MicrosoftEdgeWebview2Setup.exe"
+            Write-Host "Downloading Evergreen WebView2 Runtime x64"
+            Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2124701" -OutFile $installer
+            $proc = Start-Process -FilePath $installer -ArgumentList "/silent","/install" -Wait -PassThru
+            Write-Host "WebView2 installer exit $($proc.ExitCode)"
+            if ($proc.ExitCode -ne 0 -and $proc.ExitCode -ne 3010) { exit $proc.ExitCode }
+          }
+          $release = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -ErrorAction SilentlyContinue).Release
+          Write-Host ".NET Framework 4 release: $release"
+
+      - name: Smoke test NovelSims_debug.exe
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+          $OutputEncoding = [System.Text.Encoding]::UTF8
+          reg add "HKCU\Software\Microsoft\Windows\Windows Error Reporting" /v DontShowUI /t REG_DWORD /d 1 /f | Out-Null
+
+          $exe = (Resolve-Path "dist\onedir\NovelSims\NovelSims_debug.exe").Path
+          $work = Split-Path $exe
+          $stdout = Join-Path (Get-Location) "smoke_stdout.txt"
+          $stderr = Join-Path (Get-Location) "smoke_stderr.txt"
+          Set-Content -Path $stdout -Value "" -Encoding utf8
+          Set-Content -Path $stderr -Value "" -Encoding utf8
+
+          $logs = @(
+            (Join-Path $env:LOCALAPPDATA "NovelSims\startup_error.log"),
+            (Join-Path $env:LOCALAPPDATA "NovelSims\native_crash.log"),
+            (Join-Path $env:LOCALAPPDATA "NovelSims\bridge.log"),
+            (Join-Path $env:TEMP "NovelSims_startup_error.log"),
+            (Join-Path $work "startup_error.log")
+          )
+          foreach ($log in $logs) {
+            if (Test-Path $log) { Remove-Item $log -Force }
+          }
+
+          Write-Host "Starting $exe"
+          $proc = Start-Process -FilePath $exe -WorkingDirectory $work -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
+          Write-Host "parent pid=$($proc.Id)"
+          Start-Sleep -Seconds 15
+
+          $names = @("NovelSims_debug", "NovelSims")
+          $procs = @(Get-Process -Name $names -ErrorAction SilentlyContinue)
+          $alive = $false
+          try {
+            $proc.Refresh()
+            if (-not $proc.HasExited) { $alive = $true }
+          } catch {}
+          if ($procs.Count -gt 0) { $alive = $true }
+          Write-Host "alive=$alive process_count=$($procs.Count)"
+          if ($procs.Count -gt 0) {
+            $procs | Select-Object Id, ProcessName, CPU | Format-Table -AutoSize | Out-String | Write-Host
+          }
+
+          function Show-TextFile([string]$label, [string]$path) {
+            Write-Host "===== $label ====="
+            if (Test-Path $path) {
+              try {
+                $item = Get-Item $path
+                Write-Host "path=$($item.FullName) size=$($item.Length)"
+                $stream = [System.IO.File]::Open($path, 'Open', 'Read', 'ReadWrite')
+                $reader = New-Object System.IO.StreamReader($stream, [System.Text.Encoding]::UTF8, $true)
+                Write-Host ($reader.ReadToEnd())
+                $reader.Dispose()
+                $stream.Dispose()
+              } catch {
+                Write-Host "could not read ${path}: $_"
+              }
+            } else {
+              Write-Host "(none)"
+            }
+            Write-Host "===== end $label ====="
+          }
+
+          Show-TextFile "smoke stdout" $stdout
+          Show-TextFile "smoke stderr" $stderr
+          Show-TextFile "startup_error.log" (Join-Path $env:LOCALAPPDATA "NovelSims\startup_error.log")
+          Show-TextFile "native_crash.log" (Join-Path $env:LOCALAPPDATA "NovelSims\native_crash.log")
+          Show-TextFile "bridge.log" (Join-Path $env:LOCALAPPDATA "NovelSims\bridge.log")
+          Show-TextFile "TEMP startup_error.log" (Join-Path $env:TEMP "NovelSims_startup_error.log")
+          Show-TextFile "exe-dir startup_error.log" (Join-Path $work "startup_error.log")
+
+          Write-Host "Stopping NovelSims processes"
+          cmd /c "taskkill /F /T /PID $($proc.Id) >NUL 2>NUL"
+          cmd /c "taskkill /F /IM NovelSims_debug.exe >NUL 2>NUL"
+          cmd /c "taskkill /F /IM NovelSims.exe >NUL 2>NUL"
+          Start-Sleep -Seconds 1
+
+          $errLog = Join-Path $env:LOCALAPPDATA "NovelSims\startup_error.log"
+          $failed = $false
+          if (-not $alive) {
+            Write-Host "SMOKE FAIL: NovelSims_debug.exe was not running after 15s"
+            $failed = $true
+          }
+          if (Test-Path $errLog) {
+            Write-Host "SMOKE FAIL: startup_error.log was written during startup"
+            $failed = $true
+          }
+          if ($failed) { exit 1 }
+          Write-Host "SMOKE PASS: NovelSims_debug.exe still running after 15s and no startup_error.log"
+
+      - name: Upload onefile
+        uses: actions/upload-artifact@v7
+        with:
+          name: NovelSims-onefile
+          path: dist/onefile/NovelSims.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: NovelSims-setup
+          path: dist/NovelSims_Setup_*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload portable onedir
+        uses: actions/upload-artifact@v7
+        with:
+          name: NovelSims-portable
+          path: dist/onedir/NovelSims
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = "$env:APP_VERSION"
+          @(
+            "NovelSims $tag for Windows.",
+            "",
+            "- NovelSims.exe: single-file program. Double-click to start.",
+            "- NovelSims_Setup_$version.exe: installer. Installs the app (including NovelSims_debug.exe) and copies the Sims 4 mod to Documents\Electronic Arts\The Sims 4\Mods\NovelSims.",
+            "- NovelSims-portable.zip: folder build. Contains NovelSims.exe and NovelSims_debug.exe sharing _internal.",
+            "",
+            "If the window does not open, run NovelSims_debug.exe. The error is written to %LOCALAPPDATA%\NovelSims\startup_error.log.",
+            "Microsoft Edge WebView2 Runtime is required: https://developer.microsoft.com/microsoft-edge/webview2/"
+          ) | Set-Content -Encoding utf8 release_notes.txt
+          gh release create $tag --title "NovelSims $tag" --notes-file release_notes.txt `
+            "dist/onefile/NovelSims.exe" `
+            "dist/NovelSims_Setup_$version.exe" `
+            "dist/NovelSims-portable.zip"

@@ -1,0 +1,35 @@
+"""Model providers shown in the dashboard. Endpoints/model ids were checked against each vendor's
+public docs on 2026-11-12, but vendors rename models often: every field stays editable in the UI."""
+
+PRESETS = [
+    {"id": "deepseek", "name": "DeepSeek", "remote": True, "base_url": "https://api.deepseek.com",
+     "models": ["deepseek-flash", "deepseek-v4-pro"], "model": "deepseek-flash",
+     "extra_body": {"thinking": {"type": "disabled"}},
+     "note": "官方 OpenAI 兼容地址。已默认关闭“思考模式”以降低延迟。"},
+    {"id": "qwen", "name": "通义千问（百炼）", "remote": True,
+     "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+     "models": ["qwen-plus", "qwen3-max", "qwen-turbo"], "model": "qwen-plus", "extra_body": {},
+     "note": "官方建议迁移到带业务空间 ID 的专属域名（https://<WorkspaceId>.cn-beijing.maas.aliyuncs.com/compatible-mode/v1），旧地址仍可填。"},
+    {"id": "zhipu", "name": "智谱 GLM", "remote": True, "base_url": "https://open.bigmodel.cn/api/paas/v4",
+     "models": ["glm-4.5-air", "glm-4.7", "glm-4.6", "glm-4-flash"], "model": "glm-4.5-air",
+     "extra_body": {"thinking": {"type": "disabled"}},
+     "note": "GLM-4.7/5 系列默认开启深度思考，会很慢且可能耗尽输出额度导致空回复；已默认关闭思考。游戏对话建议用 air / flash 这类快速模型。模型名以智谱控制台为准。"},
+    {"id": "moonshot", "name": "Kimi（月之暗面）", "remote": True, "base_url": "https://api.moonshot.cn/v1",
+     "models": ["kimi-k2-turbo-preview", "kimi-k2.5"], "model": "kimi-k2-turbo-preview", "extra_body": {},
+     "note": "模型名区分大小写，以 Kimi 开放平台为准。"},
+    {"id": "doubao", "name": "豆包（火山方舟）", "remote": True, "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+     "models": [], "model": "", "extra_body": {},
+     "note": "“模型”处通常要填方舟控制台里创建的接入点 ID（形如 ep-xxxx），也可填平台提供的模型名。"},
+    {"id": "openai", "name": "OpenAI GPT", "remote": True, "base_url": "https://api.openai.com/v1",
+     "models": ["gpt-4o-mini", "gpt-4.1-mini"], "model": "gpt-4o-mini", "extra_body": {},
+     "note": "新一代模型若拒绝 temperature / max_tokens，后端会自动改用兼容参数重试。"},
+    {"id": "custom", "name": "自定义（OpenAI 兼容）", "remote": True, "base_url": "https://",
+     "models": [], "model": "", "extra_body": {},
+     "note": "任何兼容 /chat/completions 的服务：中转站、SiliconFlow、OpenRouter 等。非本机地址必须是 https。"},
+    {"id": "ollama", "name": "Ollama（本地）", "remote": False, "base_url": "http://127.0.0.1:11434",
+     "models": [], "model": "qwen2.5:7b", "extra_body": {},
+     "note": "数据不出本机。先在 Ollama 里下载好模型。"},
+    {"id": "mock", "name": "测试模型", "remote": False, "base_url": "", "models": [], "model": "mock",
+     "extra_body": {}, "note": "不调用任何模型，只返回固定台词，用来验证整条链路。"},
+]
+BY_ID = {p["id"]: p for p in PRESETS}
